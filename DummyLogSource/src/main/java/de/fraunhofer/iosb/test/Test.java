@@ -23,7 +23,9 @@ public class Test {
     public static void main(final String[] args) throws InterruptedException {
         while (true) {
             LOGGER.debug("Test");
-
+            LOGGER.warn ("Warning");
+            LOGGER.info("Info");
+            LOGGER.trace("trace");
         }
     }
 }
