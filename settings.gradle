@@ -1,5 +1,8 @@
 include 'LogSink'
 include 'DummyLogSource'
+include 'IEEE1516e'
+include 'TC_LIB'
+include 'TC'
 
 rootProject.children.each { project ->
     project.buildFileName = "${project.name}.gradle"
