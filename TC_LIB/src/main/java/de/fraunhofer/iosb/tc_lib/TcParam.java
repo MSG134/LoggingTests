@@ -19,20 +19,21 @@ public class TcParam {
     private final int    fileNum            = 10;
     private File[]       fddFiles           = new File[this.fileNum];
     private URL[]        urls               = new URL[this.fileNum];
+    private final String basePath = "build/resources/main/";
 
 
     public TcParam() {
         // Initiate data
-        this.fddFiles[0] = new File("RPR-Switches_v2.0_draft19.10.xml");
-        this.fddFiles[1] = new File("RPR-Base_v2.0_draft19.10.xml");
-        this.fddFiles[2] = new File("RPR-Physical_v2.0_draft19.10.xml");
-        this.fddFiles[3] = new File("RPR-Aggregate_v2.0_draft19.10.xml");
-        this.fddFiles[4] = new File("NETN-Base_v1.0.2.xml");
-        this.fddFiles[5] = new File("NETN-Physical_v1.1.2.xml");
-        this.fddFiles[6] = new File("NETN-Aggregate_v1.0.4.xml");
-        this.fddFiles[7] = new File("TMR_v1.1.3.xml");
-        this.fddFiles[8] = new File("CBRN_v1.1.7.xml");
-        this.fddFiles[9] = new File("MRM_v1.1.1.xml");
+        this.fddFiles[0] = new File(basePath + "RPR-Switches_v2.0_draft19.10.xml");
+        this.fddFiles[1] = new File(basePath + "RPR-Base_v2.0_draft19.10.xml");
+        this.fddFiles[2] = new File(basePath + "RPR-Physical_v2.0_draft19.10.xml");
+        this.fddFiles[3] = new File(basePath + "RPR-Aggregate_v2.0_draft19.10.xml");
+        this.fddFiles[4] = new File(basePath + "NETN-Base_v1.0.2.xml");
+        this.fddFiles[5] = new File(basePath + "NETN-Physical_v1.1.2.xml");
+        this.fddFiles[6] = new File(basePath + "NETN-Aggregate_v1.0.4.xml");
+        this.fddFiles[7] = new File(basePath + "TMR_v1.1.3.xml");
+        this.fddFiles[8] = new File(basePath + "CBRN_v1.1.7.xml");
+        this.fddFiles[9] = new File(basePath + "MRM_v1.1.1.xml");
         for (int i = 0; i < this.fileNum; i++) {
             try {
                 this.urls[i] = this.fddFiles[i].toURI().toURL();
