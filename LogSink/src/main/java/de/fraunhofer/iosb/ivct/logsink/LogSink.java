@@ -86,7 +86,6 @@ public class LogSink {
             catch (final IOException ex) {
                 LOGGER.error("Error in input.", ex);
             }
-
         }
     }
 }
