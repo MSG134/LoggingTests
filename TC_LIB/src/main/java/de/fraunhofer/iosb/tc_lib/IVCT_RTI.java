@@ -171,14 +171,17 @@ public class IVCT_RTI {
     private Logger             LOGGER;
     private FederateAmbassador _fedAmbassador;
     private TcStatus           tcPhaseBody = TcStatus.preamble;
+    private FederateHandle     myFederateHandle;
 
 
     /**
      * @param theRTIAmbassador reference to the rti ambassador
+     * @param LOGGER reference to the logger
      */
     public IVCT_RTI(final RTIambassador theRTIAmbassador, final Logger LOGGER) {
         this._rtiAmbassador = theRTIAmbassador;
         this.LOGGER = LOGGER;
+        this.myFederateHandle = null;
     }
 
 
@@ -203,6 +206,14 @@ public class IVCT_RTI {
      */
     public void tc_postamble() {
         this.tcPhaseBody = TcStatus.postamble;
+    }
+
+
+    /**
+     * @return value of the federate handle
+     */
+    public FederateHandle getMyFederateHandle() {
+        return this.myFederateHandle;
     }
 
 
@@ -391,9 +402,9 @@ public class IVCT_RTI {
     //4.9
     public FederateHandle joinFederationExecution(final String federateName, final String federateType, final String federationExecutionName, final URL[] additionalFomModules) throws CouldNotCreateLogicalTimeFactory, FederateNameAlreadyInUse, FederationExecutionDoesNotExist, InconsistentFDD, ErrorReadingFDD, CouldNotOpenFDD, SaveInProgress, RestoreInProgress, FederateAlreadyExecutionMember, NotConnected, CallNotAllowedFromWithinCallback, RTIinternalError {
         this.LOGGER.info("joinFederationExecution " + federateName + " " + federateType + " " + federationExecutionName + " " + Arrays.toString(additionalFomModules));
-        final FederateHandle federateHandle = this._rtiAmbassador.joinFederationExecution(federateName, federateType, federationExecutionName, additionalFomModules);
-        this.LOGGER.info("joinFederationExecution return " + federateHandle.toString());
-        return federateHandle;
+        this.myFederateHandle = this._rtiAmbassador.joinFederationExecution(federateName, federateType, federationExecutionName, additionalFomModules);
+        this.LOGGER.info("joinFederationExecution return " + this.myFederateHandle.toString());
+        return this.myFederateHandle;
     }
 
 
