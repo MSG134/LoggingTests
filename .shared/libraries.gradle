@@ -4,7 +4,7 @@ ext {
 		
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~ Gradle Build Environment
-        gradleVersion = '2.7'
+        gradleVersion = '2.8'
         gradleWrapperVersion = "${gradleVersion}"
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~ IVCT settings
