@@ -8,6 +8,14 @@ import hla.rti1516e.FederateAmbassador;
 import org.slf4j.Logger;
 
 
+/**
+ * Abstract base class for test cases. In the concrete test cases, the three
+ * methods preambleAction, performTest and postambleAction have to be
+ * implemented as they will be called by the execute method of this abstract
+ * class. Empty implementations of these classes are also valid.
+ *
+ * @author sen (Fraunhofer IOSB)
+ */
 public abstract class AbstractTestCase {
 
     protected abstract void performTest(IVCT_RTI ivct_rti, TcParam tcParam);
