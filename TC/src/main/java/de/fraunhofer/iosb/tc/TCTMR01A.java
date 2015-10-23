@@ -42,7 +42,7 @@ public class TCTMR01A extends AbstractTestCase {
 
 
     @Override
-    protected void preambleAction(final IVCT_RTI ivct_rti, final TcParam tcParam) {
+    protected void preambleAction(final IVCT_RTI ivct_rti, final TcParam tcParam) throws TcInconclusive {
         // Initiate rti
         ivct_rti.initiateRti(tcParam, theFederateAmbassador);
 
@@ -60,7 +60,7 @@ public class TCTMR01A extends AbstractTestCase {
             this.federateTransactionId.setValues(myFederateHandle, myTransactionID, ivct_rti.getFederateName(myFederateHandle));
         }
         catch (InvalidFederateHandle | FederateHandleNotKnown | FederateNotExecutionMember | NotConnected | RTIinternalError ex) {
-            throw new TcFailed(ex.getMessage());
+            throw new TcInconclusive(ex.getMessage());
         }
 
         // Build and send the TMR request
@@ -69,7 +69,7 @@ public class TCTMR01A extends AbstractTestCase {
 
 
     @Override
-    protected void performTest(final IVCT_RTI ivct_rti, final TcParam tcParam) {
+    protected void performTest(final IVCT_RTI ivct_rti, final TcParam tcParam) throws TcInconclusive, TcFailed {
         // Allow time to work.
         try {
             Thread.sleep(tcParam.getSleepTimeTmr());
@@ -96,7 +96,7 @@ public class TCTMR01A extends AbstractTestCase {
 
 
     @Override
-    protected void postambleAction(final IVCT_RTI ivct_rti, final TcParam tcParam) {
+    protected void postambleAction(final IVCT_RTI ivct_rti, final TcParam tcParam) throws TcInconclusive {
         // Terminate rti
         ivct_rti.terminateRti(tcParam);
 
