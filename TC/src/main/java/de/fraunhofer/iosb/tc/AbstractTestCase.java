@@ -3,6 +3,8 @@ package de.fraunhofer.iosb.tc;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
 import de.fraunhofer.iosb.tc_lib.LocalCache;
+import de.fraunhofer.iosb.tc_lib.TcFailed;
+import de.fraunhofer.iosb.tc_lib.TcInconclusive;
 import de.fraunhofer.iosb.tc_lib.TcParam;
 import hla.rti1516e.FederateAmbassador;
 import org.slf4j.Logger;
@@ -18,13 +20,13 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractTestCase {
 
-    protected abstract void performTest(IVCT_RTI ivct_rti, TcParam tcParam);
+    protected abstract void performTest(IVCT_RTI ivct_rti, TcParam tcParam) throws TcInconclusive, TcFailed;
 
 
-    protected abstract void preambleAction(IVCT_RTI ivct_rti, TcParam tcParam);
+    protected abstract void preambleAction(IVCT_RTI ivct_rti, TcParam tcParam) throws TcInconclusive;
 
 
-    protected abstract void postambleAction(IVCT_RTI ivct_rti, TcParam tcParam);
+    protected abstract void postambleAction(IVCT_RTI ivct_rti, TcParam tcParam) throws TcInconclusive;
 
 
     /**
