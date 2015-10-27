@@ -3,8 +3,8 @@ package de.fraunhofer.iosb.tc;
 import de.fraunhofer.iosb.tc_lib.FederateTransactionId;
 import de.fraunhofer.iosb.tc_lib.IVCT_FederateAmbassador;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI;
-import de.fraunhofer.iosb.tc_lib.LocalCache;
 import de.fraunhofer.iosb.tc_lib.LocalCacheTmr;
+import de.fraunhofer.iosb.tc_lib.LocalCacheTmrFactory;
 import de.fraunhofer.iosb.tc_lib.TcFailed;
 import de.fraunhofer.iosb.tc_lib.TcInconclusive;
 import de.fraunhofer.iosb.tc_lib.TcParam;
@@ -25,9 +25,8 @@ import org.slf4j.LoggerFactory;
 public class TCTMR01A extends AbstractTestCase {
     // Test case parameters
     private static Logger                   LOGGER                   = LoggerFactory.getLogger(TCTMR01A.class);
-    private static final LocalCache         localCache               = new LocalCache(LOGGER);
-    private static final LocalCacheTmr      localCacheTmr            = new LocalCacheTmr(LOGGER);
-    private static final FederateAmbassador theFederateAmbassador    = new IVCT_FederateAmbassador(localCache, LOGGER);
+    private static final LocalCacheTmr      localCacheTmr            = LocalCacheTmrFactory.getLocalCacheTmr(LOGGER);
+    private static final FederateAmbassador theFederateAmbassador    = new IVCT_FederateAmbassador(localCacheTmr, LOGGER);
     private static int                      transactionID32          = 1;
     private final FederateTransactionId     federateTransactionId    = new FederateTransactionId();
     private final Set<ObjectInstanceHandle> sutObjectInstanceHandles = new HashSet<ObjectInstanceHandle>();
@@ -37,7 +36,7 @@ public class TCTMR01A extends AbstractTestCase {
     public static void main(final String[] args) {
         // Build test case parameters to use
         final TcParam tcParam = new TcParam();
-        new TCTMR01A().execute(tcParam, localCache, LOGGER, theFederateAmbassador);
+        new TCTMR01A().execute(tcParam, localCacheTmr, LOGGER, theFederateAmbassador);
     }
 
 

@@ -12,7 +12,6 @@ import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.OrderType;
 import hla.rti1516e.ParameterHandle;
 import hla.rti1516e.ParameterHandleValueMap;
-import hla.rti1516e.RTIambassador;
 import hla.rti1516e.TransportationTypeHandle;
 import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
@@ -30,14 +29,14 @@ import org.slf4j.Logger;
  * @author Johannes Mulder (Fraunhofer IOSB)
  */
 public class LocalCache {
-    private Logger                                                     logger;
+    protected Logger                                                   logger;
     private AttributeHandle                                            _attributeIdName;
     private EncoderFactory                                             _encoderFactory;
     private InteractionClassHandle                                     _messageId;
     private ObjectInstanceHandle                                       _userId;
     private ParameterHandle                                            _parameterIdSender;
     private ParameterHandle                                            _parameterIdText;
-    private RTIambassador                                              _rtiAmbassador;
+    private IVCT_RTI                                                   ivct_rti;
     private String                                                     _username;
     private final Map<ObjectInstanceHandle, ObjectClassHandle>         discoveredObjects        = new HashMap<ObjectInstanceHandle, ObjectClassHandle>();
     private final Map<ObjectInstanceHandle, UUID>                      objectUUIDmap            = new HashMap<ObjectInstanceHandle, UUID>();
@@ -86,8 +85,8 @@ public class LocalCache {
     }
 
 
-    public void addRti(final RTIambassador rtiAmbassador, final EncoderFactory encoderFactory) {
-        this._rtiAmbassador = rtiAmbassador;
+    public void addRti(final IVCT_RTI ivct_rti, final EncoderFactory encoderFactory) {
+        this.ivct_rti = ivct_rti;
         this._encoderFactory = encoderFactory;
     }
 
@@ -166,10 +165,10 @@ public class LocalCache {
     public void provideAttributeValueUpdate(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes, final byte[] userSuppliedTag) {
         if (theObject.equals(this._userId) && theAttributes.contains(this._attributeIdName)) {
             try {
-                final AttributeHandleValueMap attributeValues = this._rtiAmbassador.getAttributeHandleValueMapFactory().create(1);
+                final AttributeHandleValueMap attributeValues = this.ivct_rti.getAttributeHandleValueMapFactory().create(1);
                 final HLAunicodeString nameEncoder = this._encoderFactory.createHLAunicodeString(this._username);
                 attributeValues.put(this._attributeIdName, nameEncoder.toByteArray());
-                this._rtiAmbassador.updateAttributeValues(this._userId, attributeValues, null);
+                this.ivct_rti.updateAttributeValues(this._userId, attributeValues, null);
             }
             catch (final RTIexception ignored) {}
         }
