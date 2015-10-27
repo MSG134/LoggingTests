@@ -55,8 +55,8 @@ public class TC00001 {
         // Get logging-IVCT-RTI using tc_param federation name, host
         final IVCT_RTI ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(localCache, LOGGER);
 
-        // Set test case status
-        ivct_rti.tc_preamble();
+        // Test case phase
+        LOGGER.info("TEST CASE PREAMBLE");
         try {
             ivct_rti.connect(theFederateAmbassador, CallbackModel.HLA_IMMEDIATE, tcParam.getSettingsDesignator());
         }
@@ -87,13 +87,13 @@ public class TC00001 {
 
         // Subscribe interaction / object classes
 
-        // Set test case status
-        ivct_rti.tc_test_body();
+        // Test case phase
+        LOGGER.info("TEST CASE BODY");
 
         // PERFORM TEST
 
-        // Set test case status
-        ivct_rti.tc_postamble();
+        // Test case phase
+        LOGGER.info("TEST CASE POST-AMBLE");
 
         // Resign federation
         try {
