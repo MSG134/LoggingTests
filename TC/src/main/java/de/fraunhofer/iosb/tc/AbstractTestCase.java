@@ -31,6 +31,9 @@ public abstract class AbstractTestCase {
 
     /**
      * @param tcParam test case parameters
+     * @param localcache The {@link LocalCache} to use
+     * @param logger The {@link Logger} to use
+     * @param theFederateAmbassador The {@link FederateAmbassador} to use
      */
     public void execute(final TcParam tcParam, final LocalCache localcache, final Logger logger, final FederateAmbassador theFederateAmbassador) {
         // Get logging-IVCT-RTI using tc_param federation name, host
