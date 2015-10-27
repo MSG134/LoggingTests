@@ -2,6 +2,7 @@
 dependencies {
 	compile     project(':IEEE1516e')
 	compile     project(':TC_LIB')
+	compile     project(':MessagingHelpers')
 	compile     libraries.slf4j_api
 	
 	runtime		libraries.actimemqClient
