@@ -27,8 +27,9 @@ public class IVCT_RTI_Factory {
 
             rtiAmbassador = rtiFactory.getRtiAmbassador();
             encoderFactory = rtiFactory.getEncoderFactory();
-            localCache.addRti(rtiAmbassador, encoderFactory);
-            return new IVCT_RTI(rtiAmbassador, encoderFactory, logger);
+            final IVCT_RTI ivct_rti = new IVCT_RTI(rtiAmbassador, encoderFactory, logger);
+            localCache.addRti(ivct_rti, encoderFactory);
+            return ivct_rti;
         }
         catch (final Exception e) {
             logger.error("Unable to create RTI ambassador.");

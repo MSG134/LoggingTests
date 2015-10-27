@@ -22,8 +22,7 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class LocalCacheTmr {
-    private Logger                            logger;
+public class LocalCacheTmr extends LocalCache {
     private final FederateTransactionIdMapper federateTransactionIdMapper = new FederateTransactionIdMapper();
     private boolean                           gotLastOwnerFederate        = false;
     private IVCT_RTI                          ivct_rti;
@@ -36,10 +35,10 @@ public class LocalCacheTmr {
 
 
     /**
-     * @param LOGGER reference to the logger
+     * @param logger reference to the logger
      */
-    public LocalCacheTmr(final Logger LOGGER) {
-        this.logger = LOGGER;
+    public LocalCacheTmr(final Logger logger) {
+        super(logger);
     }
 
 
