@@ -41,8 +41,8 @@ public abstract class AbstractTestCase {
 
         // preamble block
         try {
-            // Set test case status
-            ivct_rti.tc_preamble();
+            // Test case phase
+            logger.info("TEST CASE PREAMBLE");
 
             // Publish interaction / object classes
             // Subscribe interaction / object classes
@@ -55,8 +55,8 @@ public abstract class AbstractTestCase {
 
         //test body block
         try {
-            // Set test case status
-            ivct_rti.tc_test_body();
+            // Test case phase
+            logger.info("TEST CASE BODY");
 
             // PERFORM TEST
             this.performTest(ivct_rti, tcParam);
@@ -68,8 +68,8 @@ public abstract class AbstractTestCase {
 
         // postamble block
         try {
-            // Set test case status
-            ivct_rti.tc_postamble();
+            // Test case phase
+            logger.info("TEST CASE POST-AMBLE");
             this.postambleAction(ivct_rti, tcParam);
         }
         catch (final Exception ex) {
