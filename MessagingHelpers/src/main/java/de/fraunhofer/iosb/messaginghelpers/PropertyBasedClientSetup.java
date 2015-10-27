@@ -30,9 +30,21 @@ public final class PropertyBasedClientSetup {
 
     private static Logger             LOGGER            = LoggerFactory.getLogger(PropertyBasedClientSetup.class);
 
+    /**
+     * properties key for username for JMS connection.
+     */
     public static final String        PROPERTY_USER     = "messaging.user";
+    /**
+     * properties key for password for JMS connection
+     */
     public static final String        PROPERTY_PASSWORD = "messaging.password";
+    /**
+     * properties key for hostname for JMS connection
+     */
     public static final String        PROPERTY_HOST     = "messaging.host";
+    /**
+     * properties key for port number for JMS connection
+     */
     public static final String        PROPERTY_PORT     = "messaging.port";
 
     private final Properties          properties;
