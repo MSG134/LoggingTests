@@ -50,6 +50,7 @@ public class TCTMR01A extends AbstractTestCase {
         final int capabilityType = 3;
         final int transferType = 2;
         final int myTransactionID = transactionID32++;
+        localCacheTmr.addRti(ivct_rti);
         localCacheTmr.isOfferingClear();
         final FederateHandle myFederateHandle = ivct_rti.getMyFederateHandle();
 
