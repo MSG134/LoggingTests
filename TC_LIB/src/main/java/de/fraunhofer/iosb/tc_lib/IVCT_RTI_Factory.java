@@ -22,13 +22,14 @@ public class IVCT_RTI_Factory {
         // Connect to RTI
         try {
             final RtiFactory rtiFactory = RtiFactoryFactory.getRtiFactory();
-            EncoderFactory _encoderFactory;
-            RTIambassador theRTIAmbassador = null;
+            EncoderFactory encoderFactory;
+            RTIambassador rtiAmbassador = null;
 
-            theRTIAmbassador = rtiFactory.getRtiAmbassador();
-            _encoderFactory = rtiFactory.getEncoderFactory();
-            localCache.addRti(theRTIAmbassador, _encoderFactory);
-            return new IVCT_RTI(theRTIAmbassador, logger);
+            rtiAmbassador = rtiFactory.getRtiAmbassador();
+            encoderFactory = rtiFactory.getEncoderFactory();
+            final IVCT_RTI ivct_rti = new IVCT_RTI(rtiAmbassador, encoderFactory, logger);
+            localCache.addRti(ivct_rti, encoderFactory);
+            return ivct_rti;
         }
         catch (final Exception e) {
             logger.error("Unable to create RTI ambassador.");

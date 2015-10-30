@@ -44,6 +44,7 @@ import hla.rti1516e.ServiceGroup;
 import hla.rti1516e.TimeQueryReturn;
 import hla.rti1516e.TransportationTypeHandle;
 import hla.rti1516e.TransportationTypeHandleFactory;
+import hla.rti1516e.encoding.EncoderFactory;
 import hla.rti1516e.exceptions.AlreadyConnected;
 import hla.rti1516e.exceptions.AsynchronousDeliveryAlreadyDisabled;
 import hla.rti1516e.exceptions.AsynchronousDeliveryAlreadyEnabled;
@@ -156,53 +157,39 @@ import org.slf4j.Logger;
  * @author Johannes Mulder
  */
 public class IVCT_RTI {
-    /**
-     * The state of the test case
-     *
-     * @author Johannes Mulder (Fraunhofer IOSB)
-     */
-    public enum TcStatus {
-        preamble,
-        testbody,
-        postamble
-    }
-
     private RTIambassador      _rtiAmbassador;
+    private EncoderFactory     encoderFactory;
     private Logger             LOGGER;
     private FederateAmbassador _fedAmbassador;
-    private TcStatus           tcPhaseBody = TcStatus.preamble;
+    private FederateHandle     myFederateHandle;
 
 
     /**
      * @param theRTIAmbassador reference to the rti ambassador
+     * @param encoderFactory
+     * @param LOGGER reference to the logger
      */
-    public IVCT_RTI(final RTIambassador theRTIAmbassador, final Logger LOGGER) {
+    public IVCT_RTI(final RTIambassador theRTIAmbassador, final EncoderFactory encoderFactory, final Logger LOGGER) {
         this._rtiAmbassador = theRTIAmbassador;
+        this.encoderFactory = encoderFactory;
         this.LOGGER = LOGGER;
+        this.myFederateHandle = null;
     }
 
 
     /**
-     * Set the tc status to non test body
+     * @return the encoder factory
      */
-    public void tc_preamble() {
-        this.tcPhaseBody = TcStatus.preamble;
+    public EncoderFactory getEncoderFactory() {
+        return this.encoderFactory;
     }
 
 
     /**
-     * Set the tc status to test body
+     * @return value of the federate handle
      */
-    public void tc_test_body() {
-        this.tcPhaseBody = TcStatus.testbody;
-    }
-
-
-    /**
-     * Set the tc status to non test body
-     */
-    public void tc_postamble() {
-        this.tcPhaseBody = TcStatus.postamble;
+    public FederateHandle getMyFederateHandle() {
+        return this.myFederateHandle;
     }
 
 
@@ -391,9 +378,9 @@ public class IVCT_RTI {
     //4.9
     public FederateHandle joinFederationExecution(final String federateName, final String federateType, final String federationExecutionName, final URL[] additionalFomModules) throws CouldNotCreateLogicalTimeFactory, FederateNameAlreadyInUse, FederationExecutionDoesNotExist, InconsistentFDD, ErrorReadingFDD, CouldNotOpenFDD, SaveInProgress, RestoreInProgress, FederateAlreadyExecutionMember, NotConnected, CallNotAllowedFromWithinCallback, RTIinternalError {
         this.LOGGER.info("joinFederationExecution " + federateName + " " + federateType + " " + federationExecutionName + " " + Arrays.toString(additionalFomModules));
-        final FederateHandle federateHandle = this._rtiAmbassador.joinFederationExecution(federateName, federateType, federationExecutionName, additionalFomModules);
-        this.LOGGER.info("joinFederationExecution return " + federateHandle.toString());
-        return federateHandle;
+        this.myFederateHandle = this._rtiAmbassador.joinFederationExecution(federateName, federateType, federationExecutionName, additionalFomModules);
+        this.LOGGER.info("joinFederationExecution return " + this.myFederateHandle.toString());
+        return this.myFederateHandle;
     }
 
 
