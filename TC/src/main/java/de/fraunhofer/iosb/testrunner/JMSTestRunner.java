@@ -32,7 +32,8 @@ public class JMSTestRunner extends TestRunner implements MessageListener {
      * @param args The command line arguments
      */
     public static void main(final String[] args) {
-
+        //        LogConfigurationHelper.configureLogging(JMSTestRunner.class);
+        LogConfigurationHelper.configureLogging();
         try {
             final JMSTestRunner runner = new JMSTestRunner();
             runner.listenToJms();
