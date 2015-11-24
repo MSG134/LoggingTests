@@ -1,11 +1,21 @@
 package de.fraunhofer.iosb.tc_lib;
 
+import de.fraunhofer.iosb.tc.LocalCache;
 import hla.rti1516e.AttributeHandle;
+import hla.rti1516e.CallbackModel;
+import hla.rti1516e.FederateAmbassador;
+import hla.rti1516e.FederateHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.encoding.HLAinteger32BE;
+import hla.rti1516e.exceptions.AlreadyConnected;
 import hla.rti1516e.exceptions.AttributeNotDefined;
+import hla.rti1516e.exceptions.CallNotAllowedFromWithinCallback;
+import hla.rti1516e.exceptions.ConnectionFailed;
+import hla.rti1516e.exceptions.FederateHandleNotKnown;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
+import hla.rti1516e.exceptions.InvalidFederateHandle;
+import hla.rti1516e.exceptions.InvalidLocalSettingsDesignator;
 import hla.rti1516e.exceptions.InvalidObjectClassHandle;
 import hla.rti1516e.exceptions.NameNotFound;
 import hla.rti1516e.exceptions.NotConnected;
@@ -13,6 +23,7 @@ import hla.rti1516e.exceptions.ObjectInstanceNotKnown;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hla.rti1516e.exceptions.RestoreInProgress;
 import hla.rti1516e.exceptions.SaveInProgress;
+import hla.rti1516e.exceptions.UnsupportedCallbackModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -22,10 +33,11 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class LocalCacheTmr extends LocalCache {
+public class LocalCacheTmr extends IVCT_NullFederateAmbassador implements LocalCache {
     private final FederateTransactionIdMapper federateTransactionIdMapper = new FederateTransactionIdMapper();
     private boolean                           gotLastOwnerFederate        = false;
     private IVCT_RTI                          ivct_rti;
+    private Logger                            logger;
     private String                            lastOwnerFederate;
 
     /**
@@ -37,8 +49,9 @@ public class LocalCacheTmr extends LocalCache {
     /**
      * @param logger reference to the logger
      */
-    public LocalCacheTmr(final Logger logger) {
+    public LocalCacheTmr(final Logger logger, final IVCT_RTI ivct_rti) {
         super(logger);
+        this.logger = logger;
     }
 
 
@@ -50,11 +63,53 @@ public class LocalCacheTmr extends LocalCache {
     }
 
 
+    @Override
+    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final TcParam tcParam) {
+        return this.ivct_rti.initiateRti(tcParam, federateReference, federateName);
+    }
+
+
+    /**
+     * @param federateReference
+     * @param callbackModel
+     * @param localSettingsDesignator
+     */
+    @Override
+    public void connect(final FederateAmbassador federateReference, final CallbackModel callbackModel, final String localSettingsDesignator) {
+        try {
+            this.ivct_rti.connect(federateReference, callbackModel, localSettingsDesignator);
+        }
+        catch (ConnectionFailed | InvalidLocalSettingsDesignator | UnsupportedCallbackModel | AlreadyConnected | CallNotAllowedFromWithinCallback | RTIinternalError ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void terminateRti(final TcParam tcParam) {
+        this.ivct_rti.terminateRti(tcParam);
+    }
+
+
     /**
      *
      */
     public void isOfferingClear() {
         this.isOfferingMap.clear();
+    }
+
+
+    /**
+     * @return value of the federate handle
+     */
+    public FederateHandle getMyFederateHandle() {
+        return this.ivct_rti.getMyFederateHandle();
+    }
+
+
+    public String getFederateName(final FederateHandle theHandle) throws InvalidFederateHandle, FederateHandleNotKnown, FederateNotExecutionMember, NotConnected, RTIinternalError {
+        return this.ivct_rti.getFederateName(theHandle);
     }
 
 

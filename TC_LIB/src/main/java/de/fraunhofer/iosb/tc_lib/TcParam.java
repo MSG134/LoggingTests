@@ -13,10 +13,12 @@ import java.net.URL;
 public class TcParam {
     // Get test case parameters
     //      use some constants for this example till we get params from a file
-    private final String federation_name    = "NETN2";
+    //    private final String federation_name    = "NETN2";
+    private final String federation_name    = "HelloWorld";
     private final String rtiHost            = "localhost";
     private final String settingsDesignator = "crcAddress=" + this.rtiHost;
-    private final int    fileNum            = 10;
+    //    private final int    fileNum            = 10;
+    private final int    fileNum            = 1;
     private File[]       fddFiles           = new File[this.fileNum];
     private URL[]        urls               = new URL[this.fileNum];
     private final String basePath           = "build/resources/main/";
@@ -27,16 +29,22 @@ public class TcParam {
 
     public TcParam() {
         // Initiate data
-        this.fddFiles[0] = new File(this.basePath + "RPR-Switches_v2.0_draft19.10.xml");
-        this.fddFiles[1] = new File(this.basePath + "RPR-Base_v2.0_draft19.10.xml");
-        this.fddFiles[2] = new File(this.basePath + "RPR-Physical_v2.0_draft19.10.xml");
-        this.fddFiles[3] = new File(this.basePath + "RPR-Aggregate_v2.0_draft19.10.xml");
-        this.fddFiles[4] = new File(this.basePath + "NETN-Base_v1.0.2.xml");
-        this.fddFiles[5] = new File(this.basePath + "NETN-Physical_v1.1.2.xml");
-        this.fddFiles[6] = new File(this.basePath + "NETN-Aggregate_v1.0.4.xml");
-        this.fddFiles[7] = new File(this.basePath + "TMR_v1.1.3.xml");
-        this.fddFiles[8] = new File(this.basePath + "CBRN_v1.1.7.xml");
-        this.fddFiles[9] = new File(this.basePath + "MRM_v1.1.1.xml");
+        /*
+         * this.fddFiles[0] = new File(this.basePath +
+         * "RPR-Switches_v2.0_draft19.10.xml"); this.fddFiles[1] = new
+         * File(this.basePath + "RPR-Base_v2.0_draft19.10.xml");
+         * this.fddFiles[2] = new File(this.basePath +
+         * "RPR-Physical_v2.0_draft19.10.xml"); this.fddFiles[3] = new
+         * File(this.basePath + "RPR-Aggregate_v2.0_draft19.10.xml");
+         * this.fddFiles[4] = new File(this.basePath + "NETN-Base_v1.0.2.xml");
+         * this.fddFiles[5] = new File(this.basePath +
+         * "NETN-Physical_v1.1.2.xml"); this.fddFiles[6] = new
+         * File(this.basePath + "NETN-Aggregate_v1.0.4.xml"); this.fddFiles[7] =
+         * new File(this.basePath + "TMR_v1.1.3.xml"); this.fddFiles[8] = new
+         * File(this.basePath + "CBRN_v1.1.7.xml"); this.fddFiles[9] = new
+         * File(this.basePath + "MRM_v1.1.1.xml");
+         */
+        this.fddFiles[0] = new File(this.basePath + "HelloWorld.xml");
         for (int i = 0; i < this.fileNum; i++) {
             try {
                 this.urls[i] = this.fddFiles[i].toURI().toURL();

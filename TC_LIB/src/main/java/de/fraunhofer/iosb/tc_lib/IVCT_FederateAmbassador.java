@@ -33,15 +33,15 @@ import org.slf4j.Logger;
  * @author Johannes Mulder (Fraunhofer IOSB)
  */
 public class IVCT_FederateAmbassador implements FederateAmbassador {
-    private LocalCache localCache;
-    private Logger     logger;
+    private IVCT_NullFederateAmbassador localCache;
+    private Logger                      logger;
 
 
     ////////////////////////////////////
     //Federation Management Services //
     ////////////////////////////////////
-    public IVCT_FederateAmbassador(final LocalCache localCache, final Logger logger) {
-        this.localCache = localCache;
+    public IVCT_FederateAmbassador(final FederateAmbassador localCache, final Logger logger) {
+        this.localCache = (IVCT_NullFederateAmbassador) localCache;
         this.logger = logger;
     }
 
@@ -240,6 +240,7 @@ public class IVCT_FederateAmbassador implements FederateAmbassador {
     @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) throws FederateInternalError {
         this.logger.info("discoverObjectInstance " + theObject.toString() + " " + theObjectClass.toString() + " " + objectName);
+        this.localCache.discoverObjectInstance(theObject, theObjectClass, objectName);
     }
 
 
@@ -247,6 +248,7 @@ public class IVCT_FederateAmbassador implements FederateAmbassador {
     @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName, final FederateHandle producingFederate) throws FederateInternalError {
         this.logger.info("discoverObjectInstance " + theObject.toString() + " " + theObjectClass.toString() + " " + objectName + " " + producingFederate.toString());
+        this.localCache.discoverObjectInstance(theObject, theObjectClass, objectName, producingFederate);
     }
 
 
@@ -254,6 +256,7 @@ public class IVCT_FederateAmbassador implements FederateAmbassador {
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
         this.logger.info("reflectAttributeValues " + theObject.toString() + " " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + reflectInfo.toString());
+        this.localCache.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, reflectInfo);
     }
 
 
@@ -261,6 +264,7 @@ public class IVCT_FederateAmbassador implements FederateAmbassador {
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
         this.logger.info("reflectAttributeValues " + theObject.toString() + " " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + reflectInfo.toString());
+        this.localCache.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, reflectInfo);
     }
 
 
@@ -268,6 +272,7 @@ public class IVCT_FederateAmbassador implements FederateAmbassador {
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
         this.logger.info("reflectAttributeValues " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + reflectInfo.toString());
+        this.localCache.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, retractionHandle, reflectInfo);
     }
 
 

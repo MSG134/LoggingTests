@@ -5,10 +5,7 @@ import de.fraunhofer.iosb.tc.LocalCacheFactory;
 import org.slf4j.Logger;
 
 
-/**
- * @author mul (Fraunhofer IOSB)
- */
-public class LocalCacheTmrFactory implements LocalCacheFactory {
+public class LocalCacheTcFactory implements LocalCacheFactory {
 
     /**
      * @param logger reference to the logger
@@ -18,7 +15,7 @@ public class LocalCacheTmrFactory implements LocalCacheFactory {
     public LocalCache getLocalCache(final IVCT_RTI ivct_rti, final Logger logger, final TcParam tcParam) {
 
         try {
-            return new LocalCacheTmr(logger, ivct_rti);
+            return new LocalCacheTc(logger, ivct_rti);
         }
         catch (final Exception e) {
             return null;

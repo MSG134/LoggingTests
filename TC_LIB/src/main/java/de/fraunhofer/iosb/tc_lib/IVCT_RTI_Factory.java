@@ -13,11 +13,10 @@ import org.slf4j.Logger;
 public class IVCT_RTI_Factory {
 
     /**
-     * @param localCache test case data cache
      * @param logger reference to the logger
      * @return
      */
-    public static IVCT_RTI getIVCT_RTI(final LocalCache localCache, final Logger logger) {
+    public static IVCT_RTI getIVCT_RTI(final Logger logger) {
 
         // Connect to RTI
         try {
@@ -28,10 +27,10 @@ public class IVCT_RTI_Factory {
             rtiAmbassador = rtiFactory.getRtiAmbassador();
             encoderFactory = rtiFactory.getEncoderFactory();
             final IVCT_RTI ivct_rti = new IVCT_RTI(rtiAmbassador, encoderFactory, logger);
-            localCache.addRti(ivct_rti, encoderFactory);
             return ivct_rti;
         }
         catch (final Exception e) {
+            e.printStackTrace();
             logger.error("Unable to create RTI ambassador.");
             return null;
         }

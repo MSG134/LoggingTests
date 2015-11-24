@@ -151,11 +151,9 @@ class HelloWorld extends NullFederateAmbassador {
             this._messageId = this._rtiAmbassador.getInteractionClassHandle("Communication");
             this._parameterIdText = this._rtiAmbassador.getParameterHandle(this._messageId, "Message");
 
-            System.out.println("AA");
             this._rtiAmbassador.subscribeInteractionClass(this._messageId);
             this._rtiAmbassador.publishInteractionClass(this._messageId);
 
-            System.out.println("AA");
             // Subscribe and publish objects
             final ObjectClassHandle participantId = this._rtiAmbassador.getObjectClassHandle("Country");
             this._attributeIdName = this._rtiAmbassador.getAttributeHandle(participantId, "Name");
@@ -199,7 +197,7 @@ class HelloWorld extends NullFederateAmbassador {
 
             final HLAunicodeString nameEncoder = this._encoderFactory.createHLAunicodeString(this.myCountry);
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 100; i++) {
                 final AttributeHandleValueMap attributes = this._rtiAmbassador.getAttributeHandleValueMapFactory().create(2);
                 final HLAfloat32LE messageEncoder = this._encoderFactory.createHLAfloat32LE();
                 messageEncoder.setValue(this.myPopulation);

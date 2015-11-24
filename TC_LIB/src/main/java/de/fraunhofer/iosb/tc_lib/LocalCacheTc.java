@@ -1,11 +1,12 @@
 package de.fraunhofer.iosb.tc_lib;
 
+import de.fraunhofer.iosb.tc.LocalCache;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
-import hla.rti1516e.FederateAmbassador.SupplementalReceiveInfo;
-import hla.rti1516e.FederateAmbassador.SupplementalReflectInfo;
-import hla.rti1516e.FederateAmbassador.SupplementalRemoveInfo;
+import hla.rti1516e.CallbackModel;
+import hla.rti1516e.FederateAmbassador;
+import hla.rti1516e.FederateHandle;
 import hla.rti1516e.InteractionClassHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
@@ -17,7 +18,13 @@ import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderFactory;
 import hla.rti1516e.encoding.HLAunicodeString;
+import hla.rti1516e.exceptions.AlreadyConnected;
+import hla.rti1516e.exceptions.CallNotAllowedFromWithinCallback;
+import hla.rti1516e.exceptions.ConnectionFailed;
+import hla.rti1516e.exceptions.InvalidLocalSettingsDesignator;
 import hla.rti1516e.exceptions.RTIexception;
+import hla.rti1516e.exceptions.RTIinternalError;
+import hla.rti1516e.exceptions.UnsupportedCallbackModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,7 +35,7 @@ import org.slf4j.Logger;
 /**
  * @author Johannes Mulder (Fraunhofer IOSB)
  */
-public class LocalCache {
+public class LocalCacheTc extends IVCT_NullFederateAmbassador implements LocalCache {
     protected Logger                                                   logger;
     private AttributeHandle                                            _attributeIdName;
     private EncoderFactory                                             _encoderFactory;
@@ -47,8 +54,39 @@ public class LocalCache {
     /**
      * @param LOGGER reference to the logger
      */
-    public LocalCache(final Logger LOGGER) {
-        this.logger = LOGGER;
+    public LocalCacheTc(final Logger logger, final IVCT_RTI ivct_rti) {
+        super(logger);
+        this.ivct_rti = ivct_rti;
+        this.logger = logger;
+    }
+
+
+    @Override
+    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final TcParam tcParam) {
+        return this.ivct_rti.initiateRti(tcParam, federateReference, federateName);
+    }
+
+
+    /**
+     * @param federateReference
+     * @param callbackModel
+     * @param localSettingsDesignator
+     */
+    @Override
+    public void connect(final FederateAmbassador federateReference, final CallbackModel callbackModel, final String localSettingsDesignator) {
+        try {
+            this.ivct_rti.connect(federateReference, callbackModel, localSettingsDesignator);
+        }
+        catch (ConnectionFailed | InvalidLocalSettingsDesignator | UnsupportedCallbackModel | AlreadyConnected | CallNotAllowedFromWithinCallback | RTIinternalError ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void terminateRti(final TcParam tcParam) {
+        this.ivct_rti.terminateRti(tcParam);
     }
 
 
@@ -91,6 +129,7 @@ public class LocalCache {
     }
 
 
+    @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) {
         if (!this.objectUUIDmap.containsKey(theObject)) {
             this.discoveredObjects.put(theObject, theObjectClass);
@@ -162,6 +201,7 @@ public class LocalCache {
     }
 
 
+    @Override
     public void provideAttributeValueUpdate(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes, final byte[] userSuppliedTag) {
         if (theObject.equals(this._userId) && theAttributes.contains(this._attributeIdName)) {
             try {
@@ -175,6 +215,7 @@ public class LocalCache {
     }
 
 
+    @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) {
         if (interactionClass.equals(this._messageId)) {
             if (!theParameters.containsKey(this._parameterIdText)) {
@@ -202,6 +243,7 @@ public class LocalCache {
     }
 
 
+    @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReflectInfo reflectInfo) {
         final ObjectClassHandle och = this.discoveredObjects.get(theObject);
         final Map<String, AttributeHandle> nameAtt = this.objectAttributesmap.get(och);
@@ -227,6 +269,7 @@ public class LocalCache {
     }
 
 
+    @Override
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final SupplementalRemoveInfo removeInfo) {
         final UUID member = this.objectUUIDmap.remove(theObject);
         if (member != null) {
