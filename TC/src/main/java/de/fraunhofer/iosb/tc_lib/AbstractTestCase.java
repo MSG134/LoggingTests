@@ -1,7 +1,5 @@
-package de.fraunhofer.iosb.tc;
+package de.fraunhofer.iosb.tc_lib;
 
-import de.fraunhofer.iosb.tc_lib.IVCT_RTI;
-import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
 import de.fraunhofer.iosb.tc_lib.TcFailed;
 import de.fraunhofer.iosb.tc_lib.TcInconclusive;
 import de.fraunhofer.iosb.tc_lib.TcParam;
@@ -18,13 +16,13 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractTestCase {
 
-    protected abstract void performTest(LocalCache localCache, TcParam tcParam) throws TcInconclusive, TcFailed;
+    protected abstract void performTest() throws TcInconclusive, TcFailed;
 
 
-    protected abstract void preambleAction(LocalCache localCache, TcParam tcParam) throws TcInconclusive;
+    protected abstract void preambleAction() throws TcInconclusive;
 
 
-    protected abstract void postambleAction(LocalCache localCache, TcParam tcParam) throws TcInconclusive;
+    protected abstract void postambleAction() throws TcInconclusive;
 
 
     /**
@@ -32,11 +30,7 @@ public abstract class AbstractTestCase {
      * @param localCacheFactory reference to the local cache factory
      * @param logger The {@link Logger} to use
      */
-    public void execute(final TcParam tcParam, final LocalCacheFactory localCacheFactory, final Logger logger) {
-
-        // Get logging-IVCT-RTI using tc_param federation name, host
-        final IVCT_RTI ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(logger);
-        final LocalCache localcache = localCacheFactory.getLocalCache(ivct_rti, logger, tcParam);
+    public void execute(final TcParam tcParam, final IVCT_BaseModel localCache, final Logger logger) {
 
         // preamble block
         try {
@@ -46,7 +40,7 @@ public abstract class AbstractTestCase {
             // Publish interaction / object classes
             // Subscribe interaction / object classes
 
-            this.preambleAction(localcache, tcParam);
+            this.preambleAction();
         }
         catch (final Exception ex) {
             // TODO
@@ -58,7 +52,7 @@ public abstract class AbstractTestCase {
             logger.info("TEST CASE BODY");
 
             // PERFORM TEST
-            this.performTest(localcache, tcParam);
+            this.performTest();
 
         }
         catch (final Exception ex) {
@@ -69,7 +63,7 @@ public abstract class AbstractTestCase {
         try {
             // Test case phase
             logger.info("TEST CASE POSTAMBLE");
-            this.postambleAction(localcache, tcParam);
+            this.postambleAction();
             logger.info("TC PASSED");
         }
         catch (final Exception ex) {

@@ -1,8 +1,8 @@
 package de.fraunhofer.iosb.ts_helloworld;
 
-import de.fraunhofer.iosb.tc.LocalCache;
+import de.fraunhofer.iosb.tc_lib.IVCT_BaseModel;
 import de.fraunhofer.iosb.tc_lib.IVCT_NullFederateAmbassador;
-import de.fraunhofer.iosb.tc_lib.IVCT_RTI;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.TcParam;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleSet;
@@ -45,12 +45,12 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class LocalCacheHelloWorld extends IVCT_NullFederateAmbassador implements LocalCache {
+public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
     private AttributeHandle                                _attributeIdName;
     private AttributeHandle                                _attributeIdPopulation;
     private EncoderFactory                                 _encoderFactory;
     private FederateHandle                                 federateHandle;
-    private IVCT_RTI                                       ivct_rti;
+    private IVCT_RTIambassador                                       ivct_rti;
     private Logger                                         logger;
     private final Map<ObjectInstanceHandle, CountryValues> _knownObjects = new HashMap<ObjectInstanceHandle, CountryValues>();
 
@@ -160,7 +160,7 @@ public class LocalCacheHelloWorld extends IVCT_NullFederateAmbassador implements
      * @param ivct_rti reference to the RTI ambassador
      * @param encoderFactory
      */
-    public LocalCacheHelloWorld(final Logger logger, final IVCT_RTI ivct_rti) {
+    public BaseModelHelloWorld(final Logger logger, final IVCT_RTIambassador ivct_rti) {
         super(logger);
         this.logger = logger;
         this.ivct_rti = ivct_rti;

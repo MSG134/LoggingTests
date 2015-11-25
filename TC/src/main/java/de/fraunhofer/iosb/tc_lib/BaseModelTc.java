@@ -1,6 +1,8 @@
 package de.fraunhofer.iosb.tc_lib;
 
-import de.fraunhofer.iosb.tc.LocalCache;
+import de.fraunhofer.iosb.tc_lib.IVCT_NullFederateAmbassador;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
+import de.fraunhofer.iosb.tc_lib.TcParam;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
@@ -35,7 +37,7 @@ import org.slf4j.Logger;
 /**
  * @author Johannes Mulder (Fraunhofer IOSB)
  */
-public class LocalCacheTc extends IVCT_NullFederateAmbassador implements LocalCache {
+public class BaseModelTc extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
     protected Logger                                                   logger;
     private AttributeHandle                                            _attributeIdName;
     private EncoderFactory                                             _encoderFactory;
@@ -43,7 +45,7 @@ public class LocalCacheTc extends IVCT_NullFederateAmbassador implements LocalCa
     private ObjectInstanceHandle                                       _userId;
     private ParameterHandle                                            _parameterIdSender;
     private ParameterHandle                                            _parameterIdText;
-    private IVCT_RTI                                                   ivct_rti;
+    private IVCT_RTIambassador                                                   ivct_rti;
     private String                                                     _username;
     private final Map<ObjectInstanceHandle, ObjectClassHandle>         discoveredObjects        = new HashMap<ObjectInstanceHandle, ObjectClassHandle>();
     private final Map<ObjectInstanceHandle, UUID>                      objectUUIDmap            = new HashMap<ObjectInstanceHandle, UUID>();
@@ -54,7 +56,7 @@ public class LocalCacheTc extends IVCT_NullFederateAmbassador implements LocalCa
     /**
      * @param LOGGER reference to the logger
      */
-    public LocalCacheTc(final Logger logger, final IVCT_RTI ivct_rti) {
+    public BaseModelTc(final Logger logger, final IVCT_RTIambassador ivct_rti) {
         super(logger);
         this.ivct_rti = ivct_rti;
         this.logger = logger;
@@ -123,7 +125,7 @@ public class LocalCacheTc extends IVCT_NullFederateAmbassador implements LocalCa
     }
 
 
-    public void addRti(final IVCT_RTI ivct_rti, final EncoderFactory encoderFactory) {
+    public void addRti(final IVCT_RTIambassador ivct_rti, final EncoderFactory encoderFactory) {
         this.ivct_rti = ivct_rti;
         this._encoderFactory = encoderFactory;
     }

@@ -38,6 +38,9 @@ public class IVCT_NullFederateAmbassador implements FederateAmbassador {
     ////////////////////////////////////
     //Federation Management Services //
     ////////////////////////////////////
+    /**
+     * @param logger
+     */
     public IVCT_NullFederateAmbassador(final Logger logger) {
         this.logger = logger;
     }

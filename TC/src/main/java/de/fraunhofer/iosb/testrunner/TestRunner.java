@@ -1,11 +1,11 @@
 package de.fraunhofer.iosb.testrunner;
 
-import de.fraunhofer.iosb.tc.AbstractTestCase;
-import de.fraunhofer.iosb.tc_lib.IVCT_FederateAmbassador;
-import de.fraunhofer.iosb.tc_lib.IVCT_RTI;
+import de.fraunhofer.iosb.tc_lib.AbstractTestCase;
+import de.fraunhofer.iosb.tc_lib.BaseModelTc;
+import de.fraunhofer.iosb.tc_lib.BaseModelTcFactory;
+import de.fraunhofer.iosb.tc_lib.IVCT_LoggingFederateAmbassador;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
-import de.fraunhofer.iosb.tc_lib.LocalCacheTc;
-import de.fraunhofer.iosb.tc_lib.LocalCacheTcFactory;
 import de.fraunhofer.iosb.tc_lib.TcParam;
 import hla.rti1516e.FederateAmbassador;
 import org.slf4j.Logger;
@@ -54,11 +54,11 @@ public class TestRunner {
             // initialize LOGGER, localcache, federeateAmbassador and tcparam
             final TcParam tcParam = new TcParam();
             final Logger testLogger = LoggerFactory.getLogger(testCase.getClass());
-            final LocalCacheTcFactory localCacheTcFactory = new LocalCacheTcFactory();
-            final IVCT_RTI ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(testLogger);
-            final LocalCacheTc localCache = (LocalCacheTc) localCacheTcFactory.getLocalCache(ivct_rti, testLogger, tcParam);
-            final FederateAmbassador theFederateAmbassador = new IVCT_FederateAmbassador(localCache, testLogger);
-            testCase.execute(tcParam, localCacheTcFactory, testLogger);
+            final BaseModelTcFactory localCacheTcFactory = new BaseModelTcFactory();
+            final IVCT_RTIambassador ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(testLogger);
+            final BaseModelTc localCache = (BaseModelTc) localCacheTcFactory.getLocalCache(ivct_rti, testLogger, tcParam);
+            final FederateAmbassador theFederateAmbassador = new IVCT_LoggingFederateAmbassador(localCache, testLogger);
+            testCase.execute(tcParam, localCache, testLogger);
         }
     }
 }

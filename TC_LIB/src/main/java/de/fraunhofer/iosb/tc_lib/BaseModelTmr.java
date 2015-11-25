@@ -1,6 +1,5 @@
 package de.fraunhofer.iosb.tc_lib;
 
-import de.fraunhofer.iosb.tc.LocalCache;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateAmbassador;
@@ -33,10 +32,10 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class LocalCacheTmr extends IVCT_NullFederateAmbassador implements LocalCache {
+public class BaseModelTmr extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
     private final FederateTransactionIdMapper federateTransactionIdMapper = new FederateTransactionIdMapper();
     private boolean                           gotLastOwnerFederate        = false;
-    private IVCT_RTI                          ivct_rti;
+    private IVCT_RTIambassador                          ivct_rti;
     private Logger                            logger;
     private String                            lastOwnerFederate;
 
@@ -49,7 +48,7 @@ public class LocalCacheTmr extends IVCT_NullFederateAmbassador implements LocalC
     /**
      * @param logger reference to the logger
      */
-    public LocalCacheTmr(final Logger logger, final IVCT_RTI ivct_rti) {
+    public BaseModelTmr(final Logger logger, final IVCT_RTIambassador ivct_rti) {
         super(logger);
         this.logger = logger;
     }
@@ -58,7 +57,7 @@ public class LocalCacheTmr extends IVCT_NullFederateAmbassador implements LocalC
     /**
      * @param ivct_rti
      */
-    public void addRti(final IVCT_RTI ivct_rti) {
+    public void addRti(final IVCT_RTIambassador ivct_rti) {
         this.ivct_rti = ivct_rti;
     }
 

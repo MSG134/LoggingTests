@@ -1,4 +1,4 @@
-package de.fraunhofer.iosb.tc;
+package de.fraunhofer.iosb.tc_lib;
 
 import de.fraunhofer.iosb.tc_lib.TcParam;
 import hla.rti1516e.CallbackModel;
@@ -9,7 +9,7 @@ import hla.rti1516e.FederateHandle;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public interface LocalCache {
+public interface IVCT_BaseModel {
     /**
      * @param tcParam the test case parameters
      */

@@ -156,7 +156,7 @@ import org.slf4j.Logger;
  *
  * @author Johannes Mulder
  */
-public class IVCT_RTI {
+public class IVCT_RTIambassador {
     private RTIambassador      _rtiAmbassador;
     private EncoderFactory     encoderFactory;
     private Logger             LOGGER;
@@ -169,7 +169,7 @@ public class IVCT_RTI {
      * @param encoderFactory
      * @param LOGGER reference to the logger
      */
-    public IVCT_RTI(final RTIambassador theRTIAmbassador, final EncoderFactory encoderFactory, final Logger LOGGER) {
+    public IVCT_RTIambassador(final RTIambassador theRTIAmbassador, final EncoderFactory encoderFactory, final Logger LOGGER) {
         this._rtiAmbassador = theRTIAmbassador;
         this.encoderFactory = encoderFactory;
         this.LOGGER = LOGGER;

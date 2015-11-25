@@ -1,8 +1,9 @@
 package de.fraunhofer.iosb.ts_helloworld;
 
-import de.fraunhofer.iosb.tc.AbstractTestCase;
-import de.fraunhofer.iosb.tc.LocalCache;
-import de.fraunhofer.iosb.tc_lib.IVCT_FederateAmbassador;
+import de.fraunhofer.iosb.tc_lib.AbstractTestCase;
+import de.fraunhofer.iosb.tc_lib.IVCT_LoggingFederateAmbassador;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.TcFailed;
 import de.fraunhofer.iosb.tc_lib.TcInconclusive;
 import de.fraunhofer.iosb.tc_lib.TcParam;
@@ -12,43 +13,39 @@ import org.slf4j.LoggerFactory;
 
 
 public class TC0001 extends AbstractTestCase {
-    FederateHandle                             federateHandle;
-    private static Logger                      logger                      = LoggerFactory.getLogger(TC0001.class);
-    private static LocalCacheHelloWorldFactory localCacheHelloWorldFactory = new LocalCacheHelloWorldFactory();
-    private String                             federateName                = "B";
+    FederateHandle                    federateHandle;
+    private static Logger             logger               = LoggerFactory.getLogger(TC0001.class);
+    private String                    federateName         = "B";
+
+    // Build test case parameters to use
+    final static TcParam              tcParam              = new TcParam();
+
+    // Get logging-IVCT-RTI using tc_param federation name, host
+    private static IVCT_RTIambassador ivct_rti             = IVCT_RTI_Factory.getIVCT_RTI(logger);
+    final static BaseModelHelloWorld  localCacheHelloWorld = new BaseModelHelloWorld(logger, ivct_rti);
 
 
     public static void main(final String[] args) {
-        // Build test case parameters to use
-        final TcParam tcParam = new TcParam();
-        logger.info("---------------------------------------------------------------------");
-        logger.info("TEST PURPOSE");
-        logger.info("Test if a HelloWorld federate calculates a fixed population increase");
-        logger.info("correctly");
-        logger.info("Observe the federate for a fixed number of cycles and compare the");
-        logger.info("last received value with the previously received value plus the fixed");
-        logger.info("percentage and a small tolerence for each cycle");
-        logger.info("---------------------------------------------------------------------");
-        logger.info(" ");
-        new TC0001().execute(tcParam, localCacheHelloWorldFactory, logger);
+
+        final String testPurpose = "\n---------------------------------------------------------------------\n" + "TEST PURPOSE\n" + "Test if a HelloWorld federate calculates a fixed population increase\n" + "correctly\n" + "Observe the federate for a fixed number of cycles and compare the\n" + "last received value with the previously received value plus the fixed\n" + "percentage and a small tolerence for each cycle\n" + "---------------------------------------------------------------------";
+        logger.info(testPurpose);
+        new TC0001().execute(tcParam, localCacheHelloWorld, logger);
     }
 
 
     @Override
-    protected void preambleAction(final LocalCache localCache, final TcParam tcParam) throws TcInconclusive {
-        final LocalCacheHelloWorld localCacheHelloWorld = (LocalCacheHelloWorld) localCache;
-        final IVCT_FederateAmbassador ivct_FederateAmbassador = new IVCT_FederateAmbassador(localCacheHelloWorld, logger);
-        this.federateHandle = localCacheHelloWorld.initiateRti(this.federateName, ivct_FederateAmbassador, tcParam);
-        if (localCacheHelloWorld.init()) {
+    protected void preambleAction() throws TcInconclusive {
+        final IVCT_LoggingFederateAmbassador ivct_FederateAmbassador = new IVCT_LoggingFederateAmbassador(TC0001.localCacheHelloWorld, logger);
+        this.federateHandle = TC0001.localCacheHelloWorld.initiateRti(this.federateName, ivct_FederateAmbassador, tcParam);
+        if (TC0001.localCacheHelloWorld.init()) {
             throw new TcInconclusive("Cannot init()");
         }
     }
 
 
     @Override
-    protected void performTest(final LocalCache localCache, final TcParam tcParam) throws TcInconclusive, TcFailed {
-        final LocalCacheHelloWorld localCacheTmr = (LocalCacheHelloWorld) localCache;
-        this.federateHandle = localCacheTmr.getFederateHandle();
+    protected void performTest() throws TcInconclusive, TcFailed {
+        this.federateHandle = TC0001.localCacheHelloWorld.getFederateHandle();
         // Allow time to work.
         try {
             Thread.sleep(3000);
@@ -58,7 +55,7 @@ public class TC0001 extends AbstractTestCase {
         }
 
         for (int i = 0; i < 10; i++) {
-            if (localCacheTmr.testCountryPopulation("A", 1.03f)) {
+            if (TC0001.localCacheHelloWorld.testCountryPopulation("A", 1.03f)) {
                 throw new TcFailed("Population incorrectly calculated");
             }
             try {
@@ -72,8 +69,8 @@ public class TC0001 extends AbstractTestCase {
 
 
     @Override
-    protected void postambleAction(final LocalCache localCache, final TcParam tcParam) throws TcInconclusive {
+    protected void postambleAction() throws TcInconclusive {
         // Terminate rti
-        localCache.terminateRti(tcParam);
+        TC0001.localCacheHelloWorld.terminateRti(tcParam);
     }
 }

@@ -1,9 +1,9 @@
 package de.fraunhofer.iosb.tc;
 
-import de.fraunhofer.iosb.tc_lib.IVCT_RTI;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
+import de.fraunhofer.iosb.tc_lib.BaseModelTc;
+import de.fraunhofer.iosb.tc_lib.BaseModelTcFactory;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
-import de.fraunhofer.iosb.tc_lib.LocalCacheTc;
-import de.fraunhofer.iosb.tc_lib.LocalCacheTcFactory;
 import de.fraunhofer.iosb.tc_lib.TcParam;
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.ResignAction;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class TC00001 {
     // Test case parameters
     private static Logger                    logger              = LoggerFactory.getLogger(TC00001.class);
-    private static final LocalCacheTcFactory localCacheTcFactory = new LocalCacheTcFactory();
+    private static final BaseModelTcFactory localCacheTcFactory = new BaseModelTcFactory();
 
 
     public static void main(final String[] args) {
@@ -48,8 +48,8 @@ public class TC00001 {
      */
     public static void execute(final TcParam tcParam) {
         // Get logging-IVCT-RTI using tc_param federation name, host
-        final IVCT_RTI ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(logger);
-        final LocalCacheTc localCacheTc = (LocalCacheTc) localCacheTcFactory.getLocalCache(ivct_rti, logger, tcParam);
+        final IVCT_RTIambassador ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(logger);
+        final BaseModelTc localCacheTc = (BaseModelTc) localCacheTcFactory.getLocalCache(ivct_rti, logger, tcParam);
 
         // Test case phase
         logger.info("TEST CASE PREAMBLE");
