@@ -198,7 +198,7 @@ public class IVCT_RTIambassador {
      * @param theFederateAmbassador the implementation of the federate
      * @return the federate handle
      */
-    public FederateHandle initiateRti(final TcParam tcParam, final FederateAmbassador theFederateAmbassador, final String federateName) {
+    public FederateHandle initiateRti(final IVCT_TcParam tcParam, final FederateAmbassador theFederateAmbassador, final String federateName) {
         // Connect to rti
         try {
             this.connect(theFederateAmbassador, CallbackModel.HLA_IMMEDIATE, tcParam.getSettingsDesignator());
@@ -239,7 +239,7 @@ public class IVCT_RTIambassador {
      *
      * @param tcParam test parameters applying to the SuT
      */
-    public void terminateRti(final TcParam tcParam) {
+    public void terminateRti(final IVCT_TcParam tcParam) {
         // Resign federation execution
         try {
             this.resignFederationExecution(ResignAction.DELETE_OBJECTS_THEN_DIVEST);

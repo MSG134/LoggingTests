@@ -1,10 +1,11 @@
 package de.fraunhofer.iosb.tc;
 
-import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
-import de.fraunhofer.iosb.tc_lib.BaseModelTc;
-import de.fraunhofer.iosb.tc_lib.BaseModelTcFactory;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
-import de.fraunhofer.iosb.tc_lib.TcParam;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
+import de.fraunhofer.iosb.tc_lib.TcBaseModel;
+import de.fraunhofer.iosb.tc_lib.TcBaseModelFactory;
+import de.fraunhofer.iosb.tc_lib.TcFederateAmbassador;
+import de.fraunhofer.iosb.tc_lib.TcParamTmr;
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.ResignAction;
 import hla.rti1516e.exceptions.CallNotAllowedFromWithinCallback;
@@ -31,14 +32,14 @@ import org.slf4j.LoggerFactory;
 
 public class TC00001 {
     // Test case parameters
-    private static Logger                    logger              = LoggerFactory.getLogger(TC00001.class);
-    private static final BaseModelTcFactory localCacheTcFactory = new BaseModelTcFactory();
+    private static Logger                   logger             = LoggerFactory.getLogger(TC00001.class);
+    private static final TcBaseModelFactory tcBaseModelFactory = new TcBaseModelFactory();
 
 
     public static void main(final String[] args) {
         // Build test case parameters to use
         logger.info("TEST CASE MAIN");
-        final TcParam tcParam = new TcParam();
+        final TcParamTmr tcParam = new TcParamTmr();
         execute(tcParam);
     }
 
@@ -46,14 +47,15 @@ public class TC00001 {
     /**
      * @param tcParam test case parameters
      */
-    public static void execute(final TcParam tcParam) {
+    public static void execute(final TcParamTmr tcParam) {
         // Get logging-IVCT-RTI using tc_param federation name, host
         final IVCT_RTIambassador ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(logger);
-        final BaseModelTc localCacheTc = (BaseModelTc) localCacheTcFactory.getLocalCache(ivct_rti, logger, tcParam);
+        final TcBaseModel tcBaseModel = (TcBaseModel) tcBaseModelFactory.getLocalCache(ivct_rti, logger, tcParam);
+        final TcFederateAmbassador tcFederateAmbassador = new TcFederateAmbassador(tcBaseModel, logger);
 
         // Test case phase
         logger.info("TEST CASE PREAMBLE");
-        localCacheTc.connect(localCacheTc, CallbackModel.HLA_IMMEDIATE, tcParam.getSettingsDesignator());
+        tcBaseModel.connect(tcFederateAmbassador, CallbackModel.HLA_IMMEDIATE, tcParam.getSettingsDesignator());
 
         // Create federation using tc_param foms
         try {
@@ -83,7 +85,7 @@ public class TC00001 {
         // PERFORM TEST
 
         // Test case phase
-        logger.info("TEST CASE POST-AMBLE");
+        logger.info("TEST CASE POSTAMBLE");
 
         // Resign federation
         try {
@@ -111,5 +113,7 @@ public class TC00001 {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
+
+        logger.info("TC PASSED");
     }
 }

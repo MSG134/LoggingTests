@@ -1,21 +1,17 @@
-package de.fraunhofer.iosb.ts_helloworld;
+package de.fraunhofer.iosb.tc_lib_helloworld;
 
 import de.fraunhofer.iosb.tc_lib.IVCT_BaseModel;
-import de.fraunhofer.iosb.tc_lib.IVCT_NullFederateAmbassador;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
-import de.fraunhofer.iosb.tc_lib.TcParam;
+import de.fraunhofer.iosb.tc_lib.IVCT_TcParam;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateAmbassador;
 import hla.rti1516e.FederateHandle;
-import hla.rti1516e.LogicalTime;
-import hla.rti1516e.MessageRetractionHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.OrderType;
-import hla.rti1516e.TransportationTypeHandle;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderFactory;
 import hla.rti1516e.encoding.HLAfloat32LE;
@@ -45,12 +41,12 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
+public class HelloWorldBaseModel implements IVCT_BaseModel {
     private AttributeHandle                                _attributeIdName;
     private AttributeHandle                                _attributeIdPopulation;
     private EncoderFactory                                 _encoderFactory;
     private FederateHandle                                 federateHandle;
-    private IVCT_RTIambassador                                       ivct_rti;
+    private IVCT_RTIambassador                             ivct_rti;
     private Logger                                         logger;
     private final Map<ObjectInstanceHandle, CountryValues> _knownObjects = new HashMap<ObjectInstanceHandle, CountryValues>();
 
@@ -106,7 +102,7 @@ public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements 
      * @return federate handle
      */
     @Override
-    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final TcParam tcParam) {
+    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final IVCT_TcParam tcParam) {
         this.federateHandle = this.ivct_rti.initiateRti(tcParam, federateReference, federateName);
         return this.federateHandle;
     }
@@ -150,7 +146,7 @@ public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements 
 
 
     @Override
-    public void terminateRti(final TcParam tcParam) {
+    public void terminateRti(final IVCT_TcParam tcParam) {
         this.ivct_rti.terminateRti(tcParam);
     }
 
@@ -160,8 +156,7 @@ public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements 
      * @param ivct_rti reference to the RTI ambassador
      * @param encoderFactory
      */
-    public BaseModelHelloWorld(final Logger logger, final IVCT_RTIambassador ivct_rti) {
-        super(logger);
+    public HelloWorldBaseModel(final Logger logger, final IVCT_RTIambassador ivct_rti) {
         this.logger = logger;
         this.ivct_rti = ivct_rti;
         this._encoderFactory = ivct_rti.getEncoderFactory();
@@ -233,7 +228,6 @@ public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements 
     /**
      * {@inheritDoc}
      */
-    @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) throws FederateInternalError {
         this.logger.info("discoverObjectInstance");
 
@@ -248,8 +242,7 @@ public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final SupplementalRemoveInfo removeInfo) {
+    public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final FederateAmbassador.SupplementalRemoveInfo removeInfo) {
         final CountryValues member = this._knownObjects.remove(theObject);
         if (member != null) {
             this.logger.info("[" + member + " has left]");
@@ -285,32 +278,4 @@ public class BaseModelHelloWorld extends IVCT_NullFederateAmbassador implements 
             }
         }
     }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
-        this.doReflectAttributeValues(theObject, theAttributes);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
-        this.doReflectAttributeValues(theObject, theAttributes);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
-        this.doReflectAttributeValues(theObject, theAttributes);
-    }
-
 }

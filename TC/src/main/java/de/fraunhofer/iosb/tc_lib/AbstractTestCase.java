@@ -1,8 +1,5 @@
 package de.fraunhofer.iosb.tc_lib;
 
-import de.fraunhofer.iosb.tc_lib.TcFailed;
-import de.fraunhofer.iosb.tc_lib.TcInconclusive;
-import de.fraunhofer.iosb.tc_lib.TcParam;
 import org.slf4j.Logger;
 
 
@@ -30,7 +27,10 @@ public abstract class AbstractTestCase {
      * @param localCacheFactory reference to the local cache factory
      * @param logger The {@link Logger} to use
      */
-    public void execute(final TcParam tcParam, final IVCT_BaseModel localCache, final Logger logger) {
+    public void execute(final IVCT_TcParam tcParam, final Logger logger) {
+
+        // Print out test case parameters
+        // logger.info(tcParam.toString());
 
         // preamble block
         try {

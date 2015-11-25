@@ -1,14 +1,14 @@
 package de.fraunhofer.iosb.tc;
 
+import de.fraunhofer.iosb.tc_lib.AbstractTestCase;
 import de.fraunhofer.iosb.tc_lib.FederateTransactionId;
 import de.fraunhofer.iosb.tc_lib.IVCT_LoggingFederateAmbassador;
-import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
-import de.fraunhofer.iosb.tc_lib.AbstractTestCase;
-import de.fraunhofer.iosb.tc_lib.BaseModelTmr;
+import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.TcFailed;
 import de.fraunhofer.iosb.tc_lib.TcInconclusive;
-import de.fraunhofer.iosb.tc_lib.TcParam;
+import de.fraunhofer.iosb.tc_lib.TcParamTmr;
+import de.fraunhofer.iosb.tc_lib.TmrBaseModel;
 import hla.rti1516e.FederateHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.FederateHandleNotKnown;
@@ -35,45 +35,43 @@ public class TCTMR01A extends AbstractTestCase {
     private String                          federateName             = "B";
 
     // Build test case parameters to use
-    final static TcParam                    tcParam                  = new TcParam();
+    final static TcParamTmr                 tcParam                  = new TcParamTmr();
 
     // Get logging-IVCT-RTI using tc_param federation name, host
-    private static IVCT_RTIambassador                 ivct_rti                 = IVCT_RTI_Factory.getIVCT_RTI(LOGGER);
-    final static BaseModelTmr              localCacheTmr            = new BaseModelTmr(LOGGER, ivct_rti);
+    private static IVCT_RTIambassador       ivct_rti                 = IVCT_RTI_Factory.getIVCT_RTI(LOGGER);
+    final static TmrBaseModel               tmrBaseModel             = new TmrBaseModel(LOGGER, ivct_rti);
 
 
     public static void main(final String[] args) {
-        // Build test case parameters to use
-        final TcParam tcParam = new TcParam();
-        new TCTMR01A().execute(tcParam, localCacheTmr, LOGGER);
+        new TCTMR01A().execute(tcParam, LOGGER);
     }
 
 
     @Override
     protected void preambleAction() throws TcInconclusive {
-        final IVCT_LoggingFederateAmbassador ivct_FederateAmbassador = new IVCT_LoggingFederateAmbassador(TCTMR01A.localCacheTmr, LOGGER);
+        final IVCT_LoggingFederateAmbassador ivct_FederateAmbassador = new IVCT_LoggingFederateAmbassador(tmrBaseModel, LOGGER);
         // Initiate rti
-        TCTMR01A.localCacheTmr.initiateRti(this.federateName, ivct_FederateAmbassador, tcParam);
+        tmrBaseModel.initiateRti(this.federateName, ivct_FederateAmbassador, tcParam);
 
         // Prepare specific data for TMR
         final int capabilityType = 3;
         final int transferType = 2;
         final int myTransactionID = transactionID32++;
-        TCTMR01A.localCacheTmr.isOfferingClear();
-        final FederateHandle myFederateHandle = TCTMR01A.localCacheTmr.getMyFederateHandle();
+        tmrBaseModel.isOfferingClear();
+        final FederateHandle myFederateHandle = tmrBaseModel.getMyFederateHandle();
 
         // ADD HANDLES TO sutObjectInstanceHandles from tcParam
         // ADD ATTRIBUTE NAMES TO attributeNames from tcParam
 
         try {
-            this.federateTransactionId.setValues(myFederateHandle, myTransactionID, TCTMR01A.localCacheTmr.getFederateName(myFederateHandle));
+            this.federateTransactionId.setValues(myFederateHandle, myTransactionID, tmrBaseModel.getFederateName(myFederateHandle));
         }
         catch (InvalidFederateHandle | FederateHandleNotKnown | FederateNotExecutionMember | NotConnected | RTIinternalError ex) {
             throw new TcInconclusive(ex.getMessage());
         }
 
         // Build and send the TMR request
-        TCTMR01A.localCacheTmr.sendTMR(this.federateTransactionId, tcParam.getSutFederate(), tcParam.getSuteFederate(), transferType, this.sutObjectInstanceHandles, this.attributeNames, capabilityType, true);
+        tmrBaseModel.sendTMR(this.federateTransactionId, tcParam.getSutFederate(), tcParam.getSuteFederate(), transferType, this.sutObjectInstanceHandles, this.attributeNames, capabilityType, true);
     }
 
 
@@ -88,17 +86,17 @@ public class TCTMR01A extends AbstractTestCase {
         }
 
         // Check the values seen
-        if (TCTMR01A.localCacheTmr.checkAndDelete(this.federateTransactionId, true)) {
+        if (tmrBaseModel.checkAndDelete(this.federateTransactionId, true)) {
             throw new TcFailed("checkAndDelete");
         }
 
         // Check is offering
-        if (TCTMR01A.localCacheTmr.checkIsOffering()) {
+        if (tmrBaseModel.checkIsOffering()) {
             throw new TcFailed("checkIsOffering");
         }
 
         // Check ownership of each attribute
-        if (TCTMR01A.localCacheTmr.checkOwnership(this.sutObjectInstanceHandles, this.attributeNames, tcParam.getSuteFederate())) {
+        if (tmrBaseModel.checkOwnership(this.sutObjectInstanceHandles, this.attributeNames, tcParam.getSuteFederate())) {
             throw new TcInconclusive("checkOwnership");
         }
     }
@@ -107,7 +105,7 @@ public class TCTMR01A extends AbstractTestCase {
     @Override
     protected void postambleAction() throws TcInconclusive {
         // Terminate rti
-        TCTMR01A.localCacheTmr.terminateRti(tcParam);
+        tmrBaseModel.terminateRti(tcParam);
 
     }
 

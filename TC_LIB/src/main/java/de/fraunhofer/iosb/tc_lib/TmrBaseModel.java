@@ -32,10 +32,10 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class BaseModelTmr extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
+public class TmrBaseModel extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
     private final FederateTransactionIdMapper federateTransactionIdMapper = new FederateTransactionIdMapper();
     private boolean                           gotLastOwnerFederate        = false;
-    private IVCT_RTIambassador                          ivct_rti;
+    private IVCT_RTIambassador                ivct_rti;
     private Logger                            logger;
     private String                            lastOwnerFederate;
 
@@ -48,7 +48,7 @@ public class BaseModelTmr extends IVCT_NullFederateAmbassador implements IVCT_Ba
     /**
      * @param logger reference to the logger
      */
-    public BaseModelTmr(final Logger logger, final IVCT_RTIambassador ivct_rti) {
+    public TmrBaseModel(final Logger logger, final IVCT_RTIambassador ivct_rti) {
         super(logger);
         this.logger = logger;
     }
@@ -62,8 +62,14 @@ public class BaseModelTmr extends IVCT_NullFederateAmbassador implements IVCT_Ba
     }
 
 
+    /**
+     * @param federateName
+     * @param federateReference
+     * @param tcParam
+     * @return
+     */
     @Override
-    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final TcParam tcParam) {
+    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final IVCT_TcParam tcParam) {
         return this.ivct_rti.initiateRti(tcParam, federateReference, federateName);
     }
 
@@ -86,7 +92,7 @@ public class BaseModelTmr extends IVCT_NullFederateAmbassador implements IVCT_Ba
 
 
     @Override
-    public void terminateRti(final TcParam tcParam) {
+    public void terminateRti(final IVCT_TcParam tcParam) {
         this.ivct_rti.terminateRti(tcParam);
     }
 
