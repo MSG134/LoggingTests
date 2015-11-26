@@ -4,6 +4,8 @@ include 'IEEE1516e'
 include 'TC_LIB'
 include 'TC'
 include 'MessagingHelpers'
+include 'HelloWorld'
+include 'TS_HelloWorld'
 
 rootProject.children.each { project ->
     project.buildFileName = "${project.name}.gradle"
