@@ -156,7 +156,7 @@ import org.slf4j.Logger;
  *
  * @author Johannes Mulder
  */
-public class IVCT_RTI {
+public class IVCT_RTIambassador {
     private RTIambassador      _rtiAmbassador;
     private EncoderFactory     encoderFactory;
     private Logger             LOGGER;
@@ -169,7 +169,7 @@ public class IVCT_RTI {
      * @param encoderFactory
      * @param LOGGER reference to the logger
      */
-    public IVCT_RTI(final RTIambassador theRTIAmbassador, final EncoderFactory encoderFactory, final Logger LOGGER) {
+    public IVCT_RTIambassador(final RTIambassador theRTIAmbassador, final EncoderFactory encoderFactory, final Logger LOGGER) {
         this._rtiAmbassador = theRTIAmbassador;
         this.encoderFactory = encoderFactory;
         this.LOGGER = LOGGER;
@@ -196,8 +196,9 @@ public class IVCT_RTI {
     /**
      * @param tcParam test parameters applying to the SuT
      * @param theFederateAmbassador the implementation of the federate
+     * @return the federate handle
      */
-    public void initiateRti(final TcParam tcParam, final FederateAmbassador theFederateAmbassador) {
+    public FederateHandle initiateRti(final IVCT_TcParam tcParam, final FederateAmbassador theFederateAmbassador, final String federateName) {
         // Connect to rti
         try {
             this.connect(theFederateAmbassador, CallbackModel.HLA_IMMEDIATE, tcParam.getSettingsDesignator());
@@ -211,19 +212,25 @@ public class IVCT_RTI {
         try {
             this.createFederationExecution(tcParam.getFederationName(), tcParam.getUrls(), "HLAfloat64Time");
         }
-        catch (CouldNotCreateLogicalTimeFactory | InconsistentFDD | ErrorReadingFDD | CouldNotOpenFDD | FederationExecutionAlreadyExists | NotConnected | RTIinternalError e3) {
+        catch (final FederationExecutionAlreadyExists e3) {
+            this.LOGGER.info("initiateRti: FederationExecutionAlreadyExists (ignored)");
+        }
+        catch (CouldNotCreateLogicalTimeFactory | InconsistentFDD | ErrorReadingFDD | CouldNotOpenFDD | NotConnected | RTIinternalError e3) {
             // TODO Auto-generated catch block
             e3.printStackTrace();
         }
 
         // Join federation execution
         try {
-            this.joinFederationExecution("TmrObserver", tcParam.getFederationName(), tcParam.getUrls());
+            //            return this.joinFederationExecution("TmrObserver", tcParam.getFederationName(), tcParam.getUrls());
+            return this.joinFederationExecution(federateName, tcParam.getFederationName(), tcParam.getUrls());
         }
         catch (CouldNotCreateLogicalTimeFactory | FederationExecutionDoesNotExist | InconsistentFDD | ErrorReadingFDD | CouldNotOpenFDD | SaveInProgress | RestoreInProgress | FederateAlreadyExecutionMember | NotConnected | CallNotAllowedFromWithinCallback | RTIinternalError e3) {
             // TODO Auto-generated catch block
             e3.printStackTrace();
         }
+
+        return null;
     }
 
 
@@ -232,7 +239,7 @@ public class IVCT_RTI {
      *
      * @param tcParam test parameters applying to the SuT
      */
-    public void terminateRti(final TcParam tcParam) {
+    public void terminateRti(final IVCT_TcParam tcParam) {
         // Resign federation execution
         try {
             this.resignFederationExecution(ResignAction.DELETE_OBJECTS_THEN_DIVEST);
@@ -246,7 +253,10 @@ public class IVCT_RTI {
         try {
             this.destroyFederationExecution(tcParam.getFederationName());
         }
-        catch (FederatesCurrentlyJoined | FederationExecutionDoesNotExist | NotConnected | RTIinternalError e1) {
+        catch (final FederatesCurrentlyJoined e1) {
+            this.LOGGER.info("terminateRti: FederatesCurrentlyJoined (ignored)");
+        }
+        catch (FederationExecutionDoesNotExist | NotConnected | RTIinternalError e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }

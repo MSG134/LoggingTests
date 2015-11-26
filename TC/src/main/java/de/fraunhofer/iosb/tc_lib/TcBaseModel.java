@@ -3,9 +3,9 @@ package de.fraunhofer.iosb.tc_lib;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
-import hla.rti1516e.FederateAmbassador.SupplementalReceiveInfo;
-import hla.rti1516e.FederateAmbassador.SupplementalReflectInfo;
-import hla.rti1516e.FederateAmbassador.SupplementalRemoveInfo;
+import hla.rti1516e.CallbackModel;
+import hla.rti1516e.FederateAmbassador;
+import hla.rti1516e.FederateHandle;
 import hla.rti1516e.InteractionClassHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
@@ -17,7 +17,13 @@ import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderFactory;
 import hla.rti1516e.encoding.HLAunicodeString;
+import hla.rti1516e.exceptions.AlreadyConnected;
+import hla.rti1516e.exceptions.CallNotAllowedFromWithinCallback;
+import hla.rti1516e.exceptions.ConnectionFailed;
+import hla.rti1516e.exceptions.InvalidLocalSettingsDesignator;
 import hla.rti1516e.exceptions.RTIexception;
+import hla.rti1516e.exceptions.RTIinternalError;
+import hla.rti1516e.exceptions.UnsupportedCallbackModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,7 +34,7 @@ import org.slf4j.Logger;
 /**
  * @author Johannes Mulder (Fraunhofer IOSB)
  */
-public class LocalCache {
+public class TcBaseModel implements IVCT_BaseModel {
     protected Logger                                                   logger;
     private AttributeHandle                                            _attributeIdName;
     private EncoderFactory                                             _encoderFactory;
@@ -36,7 +42,7 @@ public class LocalCache {
     private ObjectInstanceHandle                                       _userId;
     private ParameterHandle                                            _parameterIdSender;
     private ParameterHandle                                            _parameterIdText;
-    private IVCT_RTI                                                   ivct_rti;
+    private IVCT_RTIambassador                                         ivct_rti;
     private String                                                     _username;
     private final Map<ObjectInstanceHandle, ObjectClassHandle>         discoveredObjects        = new HashMap<ObjectInstanceHandle, ObjectClassHandle>();
     private final Map<ObjectInstanceHandle, UUID>                      objectUUIDmap            = new HashMap<ObjectInstanceHandle, UUID>();
@@ -47,8 +53,38 @@ public class LocalCache {
     /**
      * @param LOGGER reference to the logger
      */
-    public LocalCache(final Logger LOGGER) {
-        this.logger = LOGGER;
+    public TcBaseModel(final Logger logger, final IVCT_RTIambassador ivct_rti) {
+        this.ivct_rti = ivct_rti;
+        this.logger = logger;
+    }
+
+
+    @Override
+    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final IVCT_TcParam tcParam) {
+        return this.ivct_rti.initiateRti(tcParam, federateReference, federateName);
+    }
+
+
+    /**
+     * @param federateReference
+     * @param callbackModel
+     * @param localSettingsDesignator
+     */
+    @Override
+    public void connect(final FederateAmbassador federateReference, final CallbackModel callbackModel, final String localSettingsDesignator) {
+        try {
+            this.ivct_rti.connect(federateReference, callbackModel, localSettingsDesignator);
+        }
+        catch (ConnectionFailed | InvalidLocalSettingsDesignator | UnsupportedCallbackModel | AlreadyConnected | CallNotAllowedFromWithinCallback | RTIinternalError ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void terminateRti(final IVCT_TcParam tcParam) {
+        this.ivct_rti.terminateRti(tcParam);
     }
 
 
@@ -85,12 +121,17 @@ public class LocalCache {
     }
 
 
-    public void addRti(final IVCT_RTI ivct_rti, final EncoderFactory encoderFactory) {
+    public void addRti(final IVCT_RTIambassador ivct_rti, final EncoderFactory encoderFactory) {
         this.ivct_rti = ivct_rti;
         this._encoderFactory = encoderFactory;
     }
 
 
+    /**
+     * @param theObject
+     * @param theObjectClass
+     * @param objectName
+     */
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) {
         if (!this.objectUUIDmap.containsKey(theObject)) {
             this.discoveredObjects.put(theObject, theObjectClass);
@@ -162,6 +203,11 @@ public class LocalCache {
     }
 
 
+    /**
+     * @param theObject
+     * @param theAttributes
+     * @param userSuppliedTag
+     */
     public void provideAttributeValueUpdate(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes, final byte[] userSuppliedTag) {
         if (theObject.equals(this._userId) && theAttributes.contains(this._attributeIdName)) {
             try {
@@ -175,7 +221,15 @@ public class LocalCache {
     }
 
 
-    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) {
+    /**
+     * @param interactionClass
+     * @param theParameters
+     * @param userSuppliedTag
+     * @param sentOrdering
+     * @param theTransport
+     * @param receiveInfo
+     */
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final FederateAmbassador.SupplementalReceiveInfo receiveInfo) {
         if (interactionClass.equals(this._messageId)) {
             if (!theParameters.containsKey(this._parameterIdText)) {
                 this.logger.error("Bad message received: No text.");
@@ -202,7 +256,15 @@ public class LocalCache {
     }
 
 
-    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReflectInfo reflectInfo) {
+    /**
+     * @param theObject
+     * @param theAttributes
+     * @param userSuppliedTag
+     * @param sentOrdering
+     * @param theTransport
+     * @param reflectInfo
+     */
+    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final FederateAmbassador.SupplementalReflectInfo reflectInfo) {
         final ObjectClassHandle och = this.discoveredObjects.get(theObject);
         final Map<String, AttributeHandle> nameAtt = this.objectAttributesmap.get(och);
         final AttributeHandle uniqueID = nameAtt.get("UniqueID");
@@ -227,7 +289,13 @@ public class LocalCache {
     }
 
 
-    public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final SupplementalRemoveInfo removeInfo) {
+    /**
+     * @param theObject
+     * @param userSuppliedTag
+     * @param sentOrdering
+     * @param removeInfo
+     */
+    public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final FederateAmbassador.SupplementalRemoveInfo removeInfo) {
         final UUID member = this.objectUUIDmap.remove(theObject);
         if (member != null) {
             this.logger.info("[" + member + " has left]");
