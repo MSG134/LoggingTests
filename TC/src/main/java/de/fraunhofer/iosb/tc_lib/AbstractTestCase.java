@@ -27,7 +27,7 @@ public abstract class AbstractTestCase {
      * @param localCacheFactory reference to the local cache factory
      * @param logger The {@link Logger} to use
      */
-    public void execute(final IVCT_TcParam tcParam, final Logger logger) {
+    public void execute(final IVCT_TcParam tcParam, final IVCT_BaseModel ivct_BaseModel, final Logger logger) {
 
         // Print out test case parameters
         // logger.info(tcParam.toString());
@@ -42,8 +42,10 @@ public abstract class AbstractTestCase {
 
             this.preambleAction();
         }
-        catch (final Exception ex) {
-            // TODO
+        catch (final TcInconclusive ex) {
+            ivct_BaseModel.terminateRti(tcParam);
+            logger.info("TC INCONCLUSIVE " + ex.getMessage());
+            return;
         }
 
         //test body block
@@ -55,8 +57,15 @@ public abstract class AbstractTestCase {
             this.performTest();
 
         }
-        catch (final Exception ex) {
-            //TODO
+        catch (final TcInconclusive ex) {
+            ivct_BaseModel.terminateRti(tcParam);
+            logger.info("TC INCONCLUSIVE " + ex.getMessage());
+            return;
+        }
+        catch (final TcFailed ex) {
+            ivct_BaseModel.terminateRti(tcParam);
+            logger.info("TC FAILED " + ex.getMessage());
+            return;
         }
 
         // postamble block
@@ -66,8 +75,10 @@ public abstract class AbstractTestCase {
             this.postambleAction();
             logger.info("TC PASSED");
         }
-        catch (final Exception ex) {
-            //TODO
+        catch (final TcInconclusive ex) {
+            ivct_BaseModel.terminateRti(tcParam);
+            logger.info("TC INCONCLUSIVE " + ex.getMessage());
+            return;
         }
     }
 }

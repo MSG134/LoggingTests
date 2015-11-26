@@ -43,7 +43,7 @@ public class TCTMR01A extends AbstractTestCase {
 
 
     public static void main(final String[] args) {
-        new TCTMR01A().execute(tcParam, LOGGER);
+        new TCTMR01A().execute(tcParam, tmrBaseModel, LOGGER);
     }
 
 

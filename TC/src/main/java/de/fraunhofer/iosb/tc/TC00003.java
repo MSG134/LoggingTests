@@ -26,7 +26,7 @@ public class TC00003 extends AbstractTestCase {
 
 
     public static void main(final String[] args) {
-        new TC00003().execute(tcParam, logger);
+        new TC00003().execute(tcParam, tcBaseModel, logger);
     }
 
 

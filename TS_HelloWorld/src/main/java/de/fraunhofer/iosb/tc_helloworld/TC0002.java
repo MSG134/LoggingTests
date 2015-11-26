@@ -9,6 +9,16 @@ import de.fraunhofer.iosb.tc_lib_helloworld.HelloWorldBaseModel;
 import de.fraunhofer.iosb.tc_lib_helloworld.HelloWorldFederateAmbassador;
 import de.fraunhofer.iosb.tc_lib_helloworld.HelloWorldTcParam;
 import hla.rti1516e.FederateHandle;
+import hla.rti1516e.ParameterHandleValueMap;
+import hla.rti1516e.encoding.HLAunicodeString;
+import hla.rti1516e.exceptions.FederateNotExecutionMember;
+import hla.rti1516e.exceptions.InteractionClassNotDefined;
+import hla.rti1516e.exceptions.InteractionClassNotPublished;
+import hla.rti1516e.exceptions.InteractionParameterNotDefined;
+import hla.rti1516e.exceptions.NotConnected;
+import hla.rti1516e.exceptions.RTIinternalError;
+import hla.rti1516e.exceptions.RestoreInProgress;
+import hla.rti1516e.exceptions.SaveInProgress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +26,9 @@ import org.slf4j.LoggerFactory;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class TC0001 extends AbstractTestCase {
+public class TC0002 extends AbstractTestCase {
     FederateHandle                            federateHandle;
-    private static Logger                     logger                       = LoggerFactory.getLogger(TC0001.class);
+    private static Logger                     logger                       = LoggerFactory.getLogger(TC0002.class);
     private String                            federateName                 = "B";
 
     // Build test case parameters to use
@@ -40,17 +50,16 @@ public class TC0001 extends AbstractTestCase {
         stringBuilder.append("\n");
         stringBuilder.append("---------------------------------------------------------------------\n");
         stringBuilder.append("TEST PURPOSE\n");
-        stringBuilder.append("Test if a HelloWorld federate calculates a fixed population increase\n");
-        stringBuilder.append("correctly\n");
-        stringBuilder.append("Observe the federate for a fixed number of cycles and compare the\n");
-        stringBuilder.append("last received value with the previously received value plus the fixed\n");
-        stringBuilder.append("percentage and a small tolerence for each cycle\n");
+        stringBuilder.append("Test if a HelloWorld federate answers with: HelloWorld <country name>\n");
+        stringBuilder.append("upon receiving a: HelloWorld\n");
+        stringBuilder.append("Repeat sending the HelloWorld interaction for several cycles and evaluate\n");
+        stringBuilder.append("the interaction received\n");
         stringBuilder.append("---------------------------------------------------------------------\n");
         final String testPurpose = stringBuilder.toString();
 
         logger.info(testPurpose);
 
-        new TC0001().execute(helloWorldTcParam, helloWorldBaseModel, logger);
+        new TC0002().execute(helloWorldTcParam, helloWorldBaseModel, logger);
     }
 
 
@@ -74,9 +83,42 @@ public class TC0001 extends AbstractTestCase {
             throw new TcInconclusive(ex.getMessage());
         }
 
+        final String testMessage = "Hello World from " + helloWorldTcParam.getSutFederate();
         for (int i = 0; i < 10; i++) {
-            if (helloWorldBaseModel.testCountryPopulation(helloWorldTcParam.getSutFederate(), helloWorldTcParam.getPopulationGrowthValue())) {
-                throw new TcFailed("Population incorrectly calculated");
+            ParameterHandleValueMap parameters;
+            try {
+                parameters = ivct_rti.getParameterHandleValueMapFactory().create(1);
+            }
+            catch (FederateNotExecutionMember | NotConnected ex1) {
+                throw new TcInconclusive(ex1.getMessage());
+            }
+            final HLAunicodeString messageEncoderString = ivct_rti.getEncoderFactory().createHLAunicodeString();
+            final String message = "Hello World";
+            messageEncoderString.setValue(message);
+            parameters.put(helloWorldBaseModel.getParameterIdText(), messageEncoderString.toByteArray());
+
+            try {
+                ivct_rti.sendInteraction(helloWorldBaseModel.getMessageId(), parameters, null);
+            }
+            catch (InteractionClassNotPublished | InteractionParameterNotDefined | InteractionClassNotDefined | SaveInProgress | RestoreInProgress | FederateNotExecutionMember | NotConnected | RTIinternalError ex1) {
+                // TODO Auto-generated catch block
+                return;
+            }
+            for (int j = 0; j < 100; j++) {
+                if (helloWorldBaseModel.haveMessage()) {
+                    break;
+                }
+                try {
+                    Thread.sleep(20);
+                }
+                catch (final InterruptedException ex) {
+                    throw new TcInconclusive(ex.getMessage());
+                }
+            }
+            final String messageReceived = helloWorldBaseModel.getMessage();
+            logger.info(messageReceived);
+            if (messageReceived.equals(testMessage) == false) {
+                throw new TcFailed("Incorrect message received: got \"" + messageReceived + "\" expected \"" + testMessage + "\"");
             }
             try {
                 Thread.sleep(helloWorldTcParam.getSleepTimeCycle());

@@ -36,33 +36,35 @@ import java.util.Map;
 
 
 class HelloWorld extends NullFederateAmbassador {
-    private RTIambassador                                _rtiAmbassador;
-    private final String[]                               _args;
-    private InteractionClassHandle                       _messageId;
-    private ParameterHandle                              _parameterIdText;
-    private ParameterHandle                              _parameterIdSender;
-    private ObjectInstanceHandle                         _countryId;
-    private AttributeHandle                              _attributeIdName;
-    private AttributeHandle                              _attributeIdPopulation;
-    private String                                       myCountry;
-    private float                                        myPopulation          = (float) 100.0;
+    private RTIambassador                            _rtiAmbassador;
+    private final String[]                           _args;
+    private InteractionClassHandle                   _messageId;
+    private ParameterHandle                          _parameterIdText;
+    private ParameterHandle                          _parameterIdSender;
+    private ObjectInstanceHandle                     _countryId;
+    private AttributeHandle                          _attributeIdName;
+    private AttributeHandle                          _attributeIdPopulation;
+    private String                                   myCountry;
+    private float                                    myPopulation          = (float) 100.0;
 
-    private volatile boolean                             _reservationComplete;
-    private volatile boolean                             _reservationSucceeded;
-    private final Object                                 _reservationSemaphore = new Object();
+    private volatile boolean                         _reservationComplete;
+    private volatile boolean                         _reservationSucceeded;
+    private final Object                             _reservationSemaphore = new Object();
 
-    private static final int                             CRC_PORT              = 8989;
-    private static final String                          FEDERATION_NAME       = "HelloWorld";
-    private EncoderFactory                               _encoderFactory;
+    private static final int                         CRC_PORT              = 8989;
+    private static final String                      FEDERATION_NAME       = "HelloWorld";
+    private EncoderFactory                           _encoderFactory;
 
-    private final Map<ObjectInstanceHandle, Participant> _knownObjects         = new HashMap<ObjectInstanceHandle, Participant>();
-    private final Map<String, HLAfloat32LE>              countryPopulations    = new HashMap<String, HLAfloat32LE>();
+    private boolean                                  receivedInteraction   = false;
 
-    private static class Participant {
+    private final Map<ObjectInstanceHandle, Country> _knownObjects         = new HashMap<ObjectInstanceHandle, Country>();
+    private final Map<String, HLAfloat32LE>          countryPopulations    = new HashMap<String, HLAfloat32LE>();
+
+    private static class Country {
         private final String _name;
 
 
-        Participant(final String name) {
+        Country(final String name) {
             this._name = name;
         }
 
@@ -150,6 +152,7 @@ class HelloWorld extends NullFederateAmbassador {
             // Subscribe and publish interactions
             this._messageId = this._rtiAmbassador.getInteractionClassHandle("Communication");
             this._parameterIdText = this._rtiAmbassador.getParameterHandle(this._messageId, "Message");
+            this._parameterIdSender = this._rtiAmbassador.getParameterHandle(this._messageId, "Message");
 
             this._rtiAmbassador.subscribeInteractionClass(this._messageId);
             this._rtiAmbassador.publishInteractionClass(this._messageId);
@@ -197,7 +200,7 @@ class HelloWorld extends NullFederateAmbassador {
 
             final HLAunicodeString nameEncoder = this._encoderFactory.createHLAunicodeString(this.myCountry);
 
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1000; i++) {
                 final AttributeHandleValueMap attributes = this._rtiAmbassador.getAttributeHandleValueMapFactory().create(2);
                 final HLAfloat32LE messageEncoder = this._encoderFactory.createHLAfloat32LE();
                 messageEncoder.setValue(this.myPopulation);
@@ -206,6 +209,18 @@ class HelloWorld extends NullFederateAmbassador {
                 attributes.put(this._attributeIdName, nameEncoder.toByteArray());
 
                 this._rtiAmbassador.updateAttributeValues(this._countryId, attributes, null);
+                if (this.receivedInteraction) {
+                    final ParameterHandleValueMap parameters = this._rtiAmbassador.getParameterHandleValueMapFactory().create(1);
+                    final HLAunicodeString messageEncoderString = this._encoderFactory.createHLAunicodeString();
+                    final String message = "Hello World from " + this.myCountry;
+                    messageEncoderString.setValue(message);
+                    parameters.put(this._parameterIdText, messageEncoderString.toByteArray());
+                    parameters.put(this._parameterIdSender, messageEncoderString.toByteArray());
+
+                    this._rtiAmbassador.sendInteraction(this._messageId, parameters, null);
+
+                    this.receivedInteraction = false;
+                }
                 Thread.sleep(1000);
                 this.printCountryPopulations();
             }
@@ -242,7 +257,7 @@ class HelloWorld extends NullFederateAmbassador {
     @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) throws FederateInternalError {
         if (!this._knownObjects.containsKey(theObject)) {
-            final Participant member = new Participant(objectName);
+            final Country member = new Country(objectName);
             System.out.println("[" + objectName + " has joined]");
             System.out.print("> ");
             this._knownObjects.put(theObject, member);
@@ -276,6 +291,8 @@ class HelloWorld extends NullFederateAmbassador {
                 System.out.println("Failed to decode incoming interaction");
             }
         }
+
+        this.receivedInteraction = true;
     }
 
 
@@ -301,7 +318,7 @@ class HelloWorld extends NullFederateAmbassador {
 
     @Override
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final SupplementalRemoveInfo removeInfo) {
-        final Participant member = this._knownObjects.remove(theObject);
+        final Country member = this._knownObjects.remove(theObject);
         if (member != null) {
             final HLAfloat32LE f = this.countryPopulations.remove(member.toString());
             System.out.println("[" + member + " has left]");
@@ -316,7 +333,7 @@ class HelloWorld extends NullFederateAmbassador {
                 final HLAunicodeString usernameDecoder = this._encoderFactory.createHLAunicodeString();
                 usernameDecoder.decode(theAttributes.get(this._attributeIdName));
                 final String memberName = usernameDecoder.getValue();
-                final Participant member = new Participant(memberName);
+                final Country member = new Country(memberName);
                 final HLAfloat32LE populationDecoder = this._encoderFactory.createHLAfloat32LE();
                 populationDecoder.decode(theAttributes.get(this._attributeIdPopulation));
                 final float population = populationDecoder.getValue();

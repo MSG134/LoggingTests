@@ -4,11 +4,13 @@ import de.fraunhofer.iosb.tc_lib.IVCT_NullFederateAmbassador;
 import hla.rti1516e.AttributeHandleValueMap;
 import hla.rti1516e.FederateAmbassador;
 import hla.rti1516e.FederateHandle;
+import hla.rti1516e.InteractionClassHandle;
 import hla.rti1516e.LogicalTime;
 import hla.rti1516e.MessageRetractionHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.OrderType;
+import hla.rti1516e.ParameterHandleValueMap;
 import hla.rti1516e.TransportationTypeHandle;
 import hla.rti1516e.exceptions.FederateInternalError;
 import org.slf4j.Logger;
@@ -21,6 +23,27 @@ public class HelloWorldFederateAmbassador extends IVCT_NullFederateAmbassador {
     public HelloWorldFederateAmbassador(final HelloWorldBaseModel helloWorldBaseModel, final Logger logger) {
         super(logger);
         this.helloWorldBaseModel = helloWorldBaseModel;
+    }
+
+
+    // 6.13
+    @Override
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+        this.helloWorldBaseModel.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, receiveInfo);
+    }
+
+
+    // 6.13
+    @Override
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+        this.helloWorldBaseModel.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, receiveInfo);
+    }
+
+
+    // 6.13
+    @Override
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+        this.helloWorldBaseModel.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, receiveInfo);
     }
 
 

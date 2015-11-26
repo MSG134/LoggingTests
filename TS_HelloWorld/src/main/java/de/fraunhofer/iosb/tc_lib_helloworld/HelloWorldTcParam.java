@@ -14,16 +14,15 @@ import java.net.URL;
 public class HelloWorldTcParam implements IVCT_TcParam {
     // Get test case parameters
     //      use some constants for this example till we get params from a file
-    //    private final String federation_name    = "NETN2";
     private final String federation_name    = "HelloWorld";
     private final String rtiHost            = "localhost";
     private final String settingsDesignator = "crcAddress=" + this.rtiHost;
-    //    private final int    fileNum            = 10;
     private final int    fileNum            = 1;
     private File[]       fddFiles           = new File[this.fileNum];
     private URL[]        urls               = new URL[this.fileNum];
     private final String basePath           = "build/resources/main/";
-    private long         sleepTimeTmr       = 5000;
+    private long         sleepTimeCycle     = 1000;
+    private long         sleepTimeWait      = 3000;
     private final String sutFederate        = "A";
 
 
@@ -78,8 +77,16 @@ public class HelloWorldTcParam implements IVCT_TcParam {
     /**
      * @return value of sleep time for tmr
      */
-    public long getSleepTimeTmr() {
-        return this.sleepTimeTmr;
+    public long getSleepTimeCycle() {
+        return this.sleepTimeCycle;
+    }
+
+
+    /**
+     * @return value of sleep time for tmr
+     */
+    public long getSleepTimeWait() {
+        return this.sleepTimeWait;
     }
 
 

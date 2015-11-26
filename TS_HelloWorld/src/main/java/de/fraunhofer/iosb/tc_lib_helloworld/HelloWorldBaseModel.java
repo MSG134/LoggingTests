@@ -8,10 +8,15 @@ import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateAmbassador;
+import hla.rti1516e.FederateAmbassador.SupplementalReceiveInfo;
 import hla.rti1516e.FederateHandle;
+import hla.rti1516e.InteractionClassHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.OrderType;
+import hla.rti1516e.ParameterHandle;
+import hla.rti1516e.ParameterHandleValueMap;
+import hla.rti1516e.TransportationTypeHandle;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderFactory;
 import hla.rti1516e.encoding.HLAfloat32LE;
@@ -23,7 +28,10 @@ import hla.rti1516e.exceptions.ConnectionFailed;
 import hla.rti1516e.exceptions.FederateHandleNotKnown;
 import hla.rti1516e.exceptions.FederateInternalError;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
+import hla.rti1516e.exceptions.FederateServiceInvocationsAreBeingReportedViaMOM;
+import hla.rti1516e.exceptions.InteractionClassNotDefined;
 import hla.rti1516e.exceptions.InvalidFederateHandle;
+import hla.rti1516e.exceptions.InvalidInteractionClassHandle;
 import hla.rti1516e.exceptions.InvalidLocalSettingsDesignator;
 import hla.rti1516e.exceptions.InvalidObjectClassHandle;
 import hla.rti1516e.exceptions.NameNotFound;
@@ -44,11 +52,15 @@ import org.slf4j.Logger;
 public class HelloWorldBaseModel implements IVCT_BaseModel {
     private AttributeHandle                                _attributeIdName;
     private AttributeHandle                                _attributeIdPopulation;
+    private boolean                                        receivedInteraction = false;
     private EncoderFactory                                 _encoderFactory;
     private FederateHandle                                 federateHandle;
+    private InteractionClassHandle                         messageId;
     private IVCT_RTIambassador                             ivct_rti;
     private Logger                                         logger;
-    private final Map<ObjectInstanceHandle, CountryValues> _knownObjects = new HashMap<ObjectInstanceHandle, CountryValues>();
+    private ParameterHandle                                parameterIdText;
+    private String                                         message;
+    private final Map<ObjectInstanceHandle, CountryValues> _knownObjects       = new HashMap<ObjectInstanceHandle, CountryValues>();
 
     private static class CountryValues {
         private final String countryName;
@@ -129,6 +141,39 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
 
 
     /**
+     * @return
+     */
+    public boolean haveMessage() {
+        return this.receivedInteraction;
+    }
+
+
+    /**
+     * @return
+     */
+    public String getMessage() {
+        this.receivedInteraction = false;
+        return this.message;
+    }
+
+
+    /**
+     * @return
+     */
+    public ParameterHandle getParameterIdText() {
+        return this.parameterIdText;
+    }
+
+
+    /**
+     * @return
+     */
+    public InteractionClassHandle getMessageId() {
+        return this.messageId;
+    }
+
+
+    /**
      * @param federateReference
      * @param callbackModel
      * @param localSettingsDesignator
@@ -167,6 +212,25 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
      * @return true means error, false means correct
      */
     public boolean init() {
+
+        // Subscribe and publish interactions
+        try {
+            this.messageId = this.ivct_rti.getInteractionClassHandle("Communication");
+            this.parameterIdText = this.ivct_rti.getParameterHandle(this.messageId, "Message");
+        }
+        catch (NameNotFound | FederateNotExecutionMember | NotConnected | RTIinternalError | InvalidInteractionClassHandle ex1) {
+            this.logger.error("Cannot get interaction class handle or parameter handle");
+            return true;
+        }
+
+        try {
+            this.ivct_rti.subscribeInteractionClass(this.messageId);
+            this.ivct_rti.publishInteractionClass(this.messageId);
+        }
+        catch (FederateServiceInvocationsAreBeingReportedViaMOM | InteractionClassNotDefined | SaveInProgress | RestoreInProgress | FederateNotExecutionMember | NotConnected | RTIinternalError ex1) {
+            // TODO Auto-generated catch block
+            ex1.printStackTrace();
+        }
 
         // Subscribe and publish objects
         ObjectClassHandle participantId;
@@ -222,6 +286,26 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
         }
 
         return true;
+    }
+
+
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+        if (interactionClass.equals(this.messageId)) {
+            if (!theParameters.containsKey(this.parameterIdText)) {
+                System.out.println("Bad message received: No text.");
+                return;
+            }
+            try {
+                final HLAunicodeString messageDecoder = this._encoderFactory.createHLAunicodeString();
+                messageDecoder.decode(theParameters.get(this.parameterIdText));
+                this.message = messageDecoder.getValue();
+            }
+            catch (final DecoderException e) {
+                System.out.println("Failed to decode incoming interaction");
+            }
+        }
+
+        this.receivedInteraction = true;
     }
 
 

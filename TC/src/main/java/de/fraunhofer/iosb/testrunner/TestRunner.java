@@ -57,7 +57,7 @@ public class TestRunner {
             final IVCT_RTIambassador ivct_rti = IVCT_RTI_Factory.getIVCT_RTI(testLogger);
             final TcBaseModel tcBaseModel = (TcBaseModel) tcBaseModelFactory.getLocalCache(ivct_rti, testLogger, tcParam);
             final TcFederateAmbassador tcFederateAmbassador = new TcFederateAmbassador(tcBaseModel, testLogger);
-            testCase.execute(tcParam, testLogger);
+            testCase.execute(tcParam, tcBaseModel, testLogger);
         }
     }
 }
