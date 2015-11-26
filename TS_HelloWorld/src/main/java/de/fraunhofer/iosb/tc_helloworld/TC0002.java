@@ -50,10 +50,10 @@ public class TC0002 extends AbstractTestCase {
         stringBuilder.append("\n");
         stringBuilder.append("---------------------------------------------------------------------\n");
         stringBuilder.append("TEST PURPOSE\n");
-        stringBuilder.append("Test if a HelloWorld federate answers with: HelloWorld <country name>\n");
-        stringBuilder.append("upon receiving a: HelloWorld\n");
-        stringBuilder.append("Repeat sending the HelloWorld interaction for several cycles and evaluate\n");
-        stringBuilder.append("the interaction received\n");
+        stringBuilder.append("Test if a HelloWorld federate answers with: \"HelloWorld <country name>\"\n");
+        stringBuilder.append("upon receiving a \"HelloWorld\" interaction\n");
+        stringBuilder.append("Repeat sending the \"HelloWorld\" interaction for several cycles and evaluate\n");
+        stringBuilder.append("the interactions received\n");
         stringBuilder.append("---------------------------------------------------------------------\n");
         final String testPurpose = stringBuilder.toString();
 
@@ -101,19 +101,10 @@ public class TC0002 extends AbstractTestCase {
                 ivct_rti.sendInteraction(helloWorldBaseModel.getMessageId(), parameters, null);
             }
             catch (InteractionClassNotPublished | InteractionParameterNotDefined | InteractionClassNotDefined | SaveInProgress | RestoreInProgress | FederateNotExecutionMember | NotConnected | RTIinternalError ex1) {
-                // TODO Auto-generated catch block
-                return;
+                throw new TcInconclusive(ex1.getMessage());
             }
-            for (int j = 0; j < 100; j++) {
-                if (helloWorldBaseModel.haveMessage()) {
-                    break;
-                }
-                try {
-                    Thread.sleep(20);
-                }
-                catch (final InterruptedException ex) {
-                    throw new TcInconclusive(ex.getMessage());
-                }
+            if (helloWorldBaseModel.getMessageStatus()) {
+                throw new TcInconclusive("Did not receive any \"HelloWorld\" message");
             }
             final String messageReceived = helloWorldBaseModel.getMessage();
             logger.info(messageReceived);

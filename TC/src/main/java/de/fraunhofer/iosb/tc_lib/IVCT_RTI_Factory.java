@@ -14,7 +14,7 @@ public class IVCT_RTI_Factory {
 
     /**
      * @param logger reference to the logger
-     * @return
+     * @return reference to an ivct rti ambassador or a null
      */
     public static IVCT_RTIambassador getIVCT_RTI(final Logger logger) {
 

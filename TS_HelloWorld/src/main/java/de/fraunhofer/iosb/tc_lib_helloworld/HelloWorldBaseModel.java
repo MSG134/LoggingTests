@@ -60,7 +60,7 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
     private Logger                                         logger;
     private ParameterHandle                                parameterIdText;
     private String                                         message;
-    private final Map<ObjectInstanceHandle, CountryValues> _knownObjects       = new HashMap<ObjectInstanceHandle, CountryValues>();
+    private final Map<ObjectInstanceHandle, CountryValues> knownObjects        = new HashMap<ObjectInstanceHandle, CountryValues>();
 
     private static class CountryValues {
         private final String countryName;
@@ -141,10 +141,21 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
 
 
     /**
-     * @return
+     * @return false if a message received, true otherwise
      */
-    public boolean haveMessage() {
-        return this.receivedInteraction;
+    public boolean getMessageStatus() {
+        for (int j = 0; j < 100; j++) {
+            if (this.receivedInteraction) {
+                return false;
+            }
+            try {
+                Thread.sleep(20);
+            }
+            catch (final InterruptedException ex) {
+                continue;
+            }
+        }
+        return true;
     }
 
 
@@ -275,7 +286,7 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
      * @return true means error, false means correct
      */
     public boolean testCountryPopulation(final String countryName, final float delta) {
-        for (final Map.Entry<ObjectInstanceHandle, CountryValues> entry: this._knownObjects.entrySet()) {
+        for (final Map.Entry<ObjectInstanceHandle, CountryValues> entry: this.knownObjects.entrySet()) {
             if (entry.getValue().toString().equals(countryName)) {
                 if (entry.getValue().testPopulation(delta, this.logger)) {
                     this.logger.error("testCountryPopulation test failed");
@@ -315,10 +326,10 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) throws FederateInternalError {
         this.logger.info("discoverObjectInstance");
 
-        if (!this._knownObjects.containsKey(theObject)) {
+        if (!this.knownObjects.containsKey(theObject)) {
             final CountryValues member = new CountryValues(objectName);
             this.logger.info("[" + objectName + " has joined]");
-            this._knownObjects.put(theObject, member);
+            this.knownObjects.put(theObject, member);
         }
     }
 
@@ -327,7 +338,7 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
      * {@inheritDoc}
      */
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final FederateAmbassador.SupplementalRemoveInfo removeInfo) {
-        final CountryValues member = this._knownObjects.remove(theObject);
+        final CountryValues member = this.knownObjects.remove(theObject);
         if (member != null) {
             this.logger.info("[" + member + " has left]");
         }
@@ -349,8 +360,8 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
                 populationDecoder.decode(theAttributes.get(this._attributeIdPopulation));
                 final float population = populationDecoder.getValue();
                 this.logger.info("Population: " + population);
-                if (this._knownObjects.containsKey(theObject)) {
-                    cv = this._knownObjects.get(theObject);
+                if (this.knownObjects.containsKey(theObject)) {
+                    cv = this.knownObjects.get(theObject);
                     if (cv.toString().equals(memberName) == false) {
                         this.logger.error("Country name not equal to country attribute name " + cv.toString() + " " + memberName);
                     }
