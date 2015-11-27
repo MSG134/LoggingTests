@@ -1,6 +1,7 @@
 
 dependencies {
 	compile 	project(':IEEE1516e')
+	compile		project(':TC')
 	compile     libraries.slf4j_api
 	
 	runtime		libraries.logback_classic
