@@ -7,7 +7,6 @@ import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.TcFailed;
 import de.fraunhofer.iosb.tc_lib.TcInconclusive;
 import de.fraunhofer.iosb.tc_lib_helloworld.HelloWorldBaseModel;
-import de.fraunhofer.iosb.tc_lib_helloworld.HelloWorldFederateAmbassador;
 import de.fraunhofer.iosb.tc_lib_helloworld.HelloWorldTcParam;
 import hla.rti1516e.FederateHandle;
 import hla.rti1516e.ParameterHandleValueMap;
@@ -39,8 +38,7 @@ public class TC0002 extends AbstractTestCase {
     private static IVCT_RTIambassador           ivct_rti                       = IVCT_RTI_Factory.getIVCT_RTI(logger);
     final static HelloWorldBaseModel            helloWorldBaseModel            = new HelloWorldBaseModel(logger, ivct_rti);
 
-    final static HelloWorldFederateAmbassador   helloWorldFederateAmbassador   = new HelloWorldFederateAmbassador(helloWorldBaseModel, logger);
-    final static IVCT_LoggingFederateAmbassador ivct_LoggingFederateAmbassador = new IVCT_LoggingFederateAmbassador(helloWorldFederateAmbassador, logger);
+    final static IVCT_LoggingFederateAmbassador ivct_LoggingFederateAmbassador = new IVCT_LoggingFederateAmbassador(helloWorldBaseModel, logger);
 
 
     /**
@@ -67,7 +65,11 @@ public class TC0002 extends AbstractTestCase {
 
     @Override
     protected void preambleAction() throws TcInconclusive {
+
+        // Initiate rti
         this.federateHandle = helloWorldBaseModel.initiateRti(this.federateName, ivct_LoggingFederateAmbassador, helloWorldTcParam);
+
+        // Do the necessary calls to get handles and do publish and subscribe
         if (helloWorldBaseModel.init()) {
             throw new TcInconclusive("Cannot helloWorldBaseModel.init()");
         }
@@ -77,17 +79,19 @@ public class TC0002 extends AbstractTestCase {
     @Override
     protected void performTest() throws TcInconclusive, TcFailed {
         this.federateHandle = helloWorldBaseModel.getFederateHandle();
-        // Allow time to work.
-        try {
-            Thread.sleep(helloWorldTcParam.getSleepTimeWait());
-        }
-        catch (final InterruptedException ex) {
-            throw new TcInconclusive(ex.getMessage());
+
+        // Allow time to work and get some reflect values.
+        if (helloWorldBaseModel.sleepFor(helloWorldTcParam.getSleepTimeWait())) {
+            throw new TcInconclusive("sleepFor problem");
         }
 
         final String message = "Hello World " + this.federateName;
         final String testMessage = "Hello World from " + helloWorldTcParam.getSutFederate();
+
+        // Loop a number of cycles and test whether the sut answers the hello world call
         for (int i = 0; i < 10; i++) {
+
+            // Create fields to hold values to send
             ParameterHandleValueMap parameters;
             try {
                 parameters = ivct_rti.getParameterHandleValueMapFactory().create(1);
@@ -95,29 +99,37 @@ public class TC0002 extends AbstractTestCase {
             catch (FederateNotExecutionMember | NotConnected ex1) {
                 throw new TcInconclusive(ex1.getMessage());
             }
+
+            // Encode the values
             final HLAunicodeString messageEncoderString = ivct_rti.getEncoderFactory().createHLAunicodeString();
             messageEncoderString.setValue(message);
             parameters.put(helloWorldBaseModel.getParameterIdText(), messageEncoderString.toByteArray());
 
+            // Send the interaction
             try {
                 ivct_rti.sendInteraction(helloWorldBaseModel.getMessageId(), parameters, null);
             }
             catch (InteractionClassNotPublished | InteractionParameterNotDefined | InteractionClassNotDefined | SaveInProgress | RestoreInProgress | FederateNotExecutionMember | NotConnected | RTIinternalError ex1) {
                 throw new TcInconclusive(ex1.getMessage());
             }
+
+            // Check if a hello world message has arrived
             if (helloWorldBaseModel.getMessageStatus()) {
                 throw new TcInconclusive("Did not receive any \"HelloWorld\" message");
             }
+
+            // Get the message
             final String messageReceived = helloWorldBaseModel.getMessage();
             logger.info(messageReceived);
+
+            // Test the value of the message
             if (messageReceived.equals(testMessage) == false) {
                 throw new TcFailed("Incorrect message received: got \"" + messageReceived + "\" expected \"" + testMessage + "\"");
             }
-            try {
-                Thread.sleep(helloWorldTcParam.getSleepTimeCycle());
-            }
-            catch (final InterruptedException ex) {
-                throw new TcInconclusive(ex.getMessage());
+
+            // Allow for some time to pass
+            if (helloWorldBaseModel.sleepFor(helloWorldTcParam.getSleepTimeCycle())) {
+                throw new TcInconclusive("sleepFor problem");
             }
         }
     }
