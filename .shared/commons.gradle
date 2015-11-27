@@ -120,14 +120,14 @@ configure(leafProjects) {
 			downloadJavadoc = false
 		}
     }
-	
-	eclipse.classpath {
-		defaultOutputDir = file('bin')
-		file.withXml { n -> 
-		n.asNode().classpathentry.findAll { it.@path.startsWith('src/test')}
-				.each { it.@output = 'bin-test' }
-		}
-	}
+// experimental: (use different folders for test and main)
+//	eclipse.classpath {
+//		defaultOutputDir = file('bin')
+//		file.withXml { n -> 
+//		n.asNode().classpathentry.findAll { it.@path.startsWith('src/test')}
+//				.each { it.@output = 'bin-test' }
+//		}
+//	}
 	
 	eclipse.classpath.file {
 		def projectEntries
