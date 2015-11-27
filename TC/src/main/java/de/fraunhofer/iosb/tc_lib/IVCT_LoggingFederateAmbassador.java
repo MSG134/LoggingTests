@@ -22,6 +22,7 @@ import hla.rti1516e.SynchronizationPointFailureReason;
 import hla.rti1516e.TransportationTypeHandle;
 import hla.rti1516e.exceptions.FederateInternalError;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 
@@ -367,13 +368,23 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     }
 
 
+    private String printAttributeHandleValueMap(final AttributeHandleValueMap theAttributes) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (final Map.Entry entry: theAttributes.entrySet()) {
+            stringBuilder.append(entry.getKey() + " ");
+        }
+        return stringBuilder.toString();
+    }
+
+
     // 6.11
     /**
      * {@inheritDoc}
      */
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
-        this.logger.info("reflectAttributeValues " + theObject.toString() + " " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + reflectInfo.toString());
+        final String attributesStr = this.printAttributeHandleValueMap(theAttributes);
+        this.logger.info("reflectAttributeValues " + theObject.toString() + " " + attributesStr.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + reflectInfo.toString());
         this.myFederateAmbassador.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, reflectInfo);
     }
 
@@ -384,7 +395,8 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
      */
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
-        this.logger.info("reflectAttributeValues " + theObject.toString() + " " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + reflectInfo.toString());
+        final String attributesStr = this.printAttributeHandleValueMap(theAttributes);
+        this.logger.info("reflectAttributeValues " + theObject.toString() + " " + attributesStr.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + reflectInfo.toString());
         this.myFederateAmbassador.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, reflectInfo);
     }
 
@@ -395,8 +407,18 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
      */
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
-        this.logger.info("reflectAttributeValues " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + reflectInfo.toString());
+        final String attributesStr = this.printAttributeHandleValueMap(theAttributes);
+        this.logger.info("reflectAttributeValues " + theObject.toString() + " " + attributesStr.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + reflectInfo.toString());
         this.myFederateAmbassador.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, retractionHandle, reflectInfo);
+    }
+
+
+    private String printParameterHandleValueMap(final ParameterHandleValueMap theAttributes) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (final Map.Entry entry: theAttributes.entrySet()) {
+            stringBuilder.append(entry.getKey() + " ");
+        }
+        return stringBuilder.toString();
     }
 
 
@@ -406,7 +428,8 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
      */
     @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
-        this.logger.info("receiveInteraction " + interactionClass.toString() + " " + theParameters.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + receiveInfo.toString());
+        final String parametersStr = this.printParameterHandleValueMap(theParameters);
+        this.logger.info("receiveInteraction " + interactionClass.toString() + " " + parametersStr.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + receiveInfo.toString());
         this.myFederateAmbassador.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, receiveInfo);
     }
 
@@ -417,7 +440,8 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
      */
     @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
-        this.logger.info("receiveInteraction " + interactionClass.toString() + " " + theParameters.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + receiveInfo.toString());
+        final String parametersStr = this.printParameterHandleValueMap(theParameters);
+        this.logger.info("receiveInteraction " + interactionClass.toString() + " " + parametersStr.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + receiveInfo.toString());
         this.myFederateAmbassador.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, receiveInfo);
     }
 
@@ -428,7 +452,8 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
      */
     @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
-        this.logger.info("receiveInteraction " + interactionClass.toString() + " " + theParameters.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + receiveInfo.toString());
+        final String parametersStr = this.printParameterHandleValueMap(theParameters);
+        this.logger.info("receiveInteraction " + interactionClass.toString() + " " + parametersStr.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + receiveInfo.toString());
         this.myFederateAmbassador.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, retractionHandle, receiveInfo);
     }
 
