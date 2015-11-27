@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.tc_helloworld;
 
 import de.fraunhofer.iosb.tc_lib.AbstractTestCase;
+import de.fraunhofer.iosb.tc_lib.IVCT_LoggingFederateAmbassador;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTI_Factory;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.TcFailed;
@@ -27,18 +28,19 @@ import org.slf4j.LoggerFactory;
  * @author mul (Fraunhofer IOSB)
  */
 public class TC0002 extends AbstractTestCase {
-    FederateHandle                            federateHandle;
-    private static Logger                     logger                       = LoggerFactory.getLogger(TC0002.class);
-    private String                            federateName                 = "B";
+    FederateHandle                              federateHandle;
+    private static Logger                       logger                         = LoggerFactory.getLogger(TC0002.class);
+    private String                              federateName                   = "IVCT";
 
     // Build test case parameters to use
-    final static HelloWorldTcParam            helloWorldTcParam            = new HelloWorldTcParam();
+    final static HelloWorldTcParam              helloWorldTcParam              = new HelloWorldTcParam();
 
     // Get logging-IVCT-RTI using tc_param federation name, host
-    private static IVCT_RTIambassador         ivct_rti                     = IVCT_RTI_Factory.getIVCT_RTI(logger);
-    final static HelloWorldBaseModel          helloWorldBaseModel          = new HelloWorldBaseModel(logger, ivct_rti);
+    private static IVCT_RTIambassador           ivct_rti                       = IVCT_RTI_Factory.getIVCT_RTI(logger);
+    final static HelloWorldBaseModel            helloWorldBaseModel            = new HelloWorldBaseModel(logger, ivct_rti);
 
-    final static HelloWorldFederateAmbassador helloWorldFederateAmbassador = new HelloWorldFederateAmbassador(helloWorldBaseModel, logger);
+    final static HelloWorldFederateAmbassador   helloWorldFederateAmbassador   = new HelloWorldFederateAmbassador(helloWorldBaseModel, logger);
+    final static IVCT_LoggingFederateAmbassador ivct_LoggingFederateAmbassador = new IVCT_LoggingFederateAmbassador(helloWorldFederateAmbassador, logger);
 
 
     /**
@@ -65,7 +67,7 @@ public class TC0002 extends AbstractTestCase {
 
     @Override
     protected void preambleAction() throws TcInconclusive {
-        this.federateHandle = helloWorldBaseModel.initiateRti(this.federateName, helloWorldFederateAmbassador, helloWorldTcParam);
+        this.federateHandle = helloWorldBaseModel.initiateRti(this.federateName, ivct_LoggingFederateAmbassador, helloWorldTcParam);
         if (helloWorldBaseModel.init()) {
             throw new TcInconclusive("Cannot helloWorldBaseModel.init()");
         }
@@ -83,6 +85,7 @@ public class TC0002 extends AbstractTestCase {
             throw new TcInconclusive(ex.getMessage());
         }
 
+        final String message = "Hello World " + this.federateName;
         final String testMessage = "Hello World from " + helloWorldTcParam.getSutFederate();
         for (int i = 0; i < 10; i++) {
             ParameterHandleValueMap parameters;
@@ -93,7 +96,6 @@ public class TC0002 extends AbstractTestCase {
                 throw new TcInconclusive(ex1.getMessage());
             }
             final HLAunicodeString messageEncoderString = ivct_rti.getEncoderFactory().createHLAunicodeString();
-            final String message = "Hello World";
             messageEncoderString.setValue(message);
             parameters.put(helloWorldBaseModel.getParameterIdText(), messageEncoderString.toByteArray());
 
