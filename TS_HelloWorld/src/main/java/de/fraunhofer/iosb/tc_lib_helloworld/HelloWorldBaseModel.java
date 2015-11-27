@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.tc_lib_helloworld;
 
 import de.fraunhofer.iosb.tc_lib.IVCT_BaseModel;
+import de.fraunhofer.iosb.tc_lib.IVCT_NullFederateAmbassador;
 import de.fraunhofer.iosb.tc_lib.IVCT_RTIambassador;
 import de.fraunhofer.iosb.tc_lib.IVCT_TcParam;
 import hla.rti1516e.AttributeHandle;
@@ -8,9 +9,10 @@ import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateAmbassador;
-import hla.rti1516e.FederateAmbassador.SupplementalReceiveInfo;
 import hla.rti1516e.FederateHandle;
 import hla.rti1516e.InteractionClassHandle;
+import hla.rti1516e.LogicalTime;
+import hla.rti1516e.MessageRetractionHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.OrderType;
@@ -49,7 +51,7 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class HelloWorldBaseModel implements IVCT_BaseModel {
+public class HelloWorldBaseModel extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
     private AttributeHandle                                _attributeIdName;
     private AttributeHandle                                _attributeIdPopulation;
     private boolean                                        receivedInteraction = false;
@@ -105,6 +107,19 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
             return true;
         }
 
+    }
+
+
+    /**
+     * @param logger reference to a logger
+     * @param ivct_rti reference to the RTI ambassador
+     * @param encoderFactory
+     */
+    public HelloWorldBaseModel(final Logger logger, final IVCT_RTIambassador ivct_rti) {
+        super(logger);
+        this.logger = logger;
+        this.ivct_rti = ivct_rti;
+        this._encoderFactory = ivct_rti.getEncoderFactory();
     }
 
 
@@ -208,14 +223,18 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
 
 
     /**
-     * @param logger reference to a logger
-     * @param ivct_rti reference to the RTI ambassador
-     * @param encoderFactory
+     * @param sleepTime
+     * @return true means problem, false is ok
      */
-    public HelloWorldBaseModel(final Logger logger, final IVCT_RTIambassador ivct_rti) {
-        this.logger = logger;
-        this.ivct_rti = ivct_rti;
-        this._encoderFactory = ivct_rti.getEncoderFactory();
+    public boolean sleepFor(final long sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        }
+        catch (final InterruptedException ex) {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -300,7 +319,7 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
     }
 
 
-    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+    private void doReceiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters) {
         if (interactionClass.equals(this.messageId)) {
             if (!theParameters.containsKey(this.parameterIdText)) {
                 System.out.println("Bad message received: No text.");
@@ -321,14 +340,58 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
 
 
     /**
+     * @param interactionClass
+     * @param theParameters
+     * @param userSuppliedTag
+     * @param sentOrdering
+     * @param theTransport
+     * @param receiveInfo
+     * @throws FederateInternalError
+     */
+    @Override
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+        this.doReceiveInteraction(interactionClass, theParameters);
+    }
+
+
+    /**
+     * @param interactionClass
+     * @param theParameters
+     * @param userSuppliedTag
+     * @param sentOrdering
+     * @param theTransport
+     * @param receiveInfo
+     * @throws FederateInternalError
+     */
+    @Override
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+        this.doReceiveInteraction(interactionClass, theParameters);
+    }
+
+
+    /**
+     * @param interactionClass
+     * @param theParameters
+     * @param userSuppliedTag
+     * @param sentOrdering
+     * @param theTransport
+     * @param receiveInfo
+     * @throws FederateInternalError
+     */
+    @Override
+    public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
+        this.doReceiveInteraction(interactionClass, theParameters);
+    }
+
+
+    /**
      * {@inheritDoc}
      */
+    @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) throws FederateInternalError {
-        this.logger.info("discoverObjectInstance");
 
         if (!this.knownObjects.containsKey(theObject)) {
             final CountryValues member = new CountryValues(objectName);
-            this.logger.info("[" + objectName + " has joined]");
             this.knownObjects.put(theObject, member);
         }
     }
@@ -337,6 +400,7 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final FederateAmbassador.SupplementalRemoveInfo removeInfo) {
         final CountryValues member = this.knownObjects.remove(theObject);
         if (member != null) {
@@ -373,4 +437,35 @@ public class HelloWorldBaseModel implements IVCT_BaseModel {
             }
         }
     }
+
+
+    /**
+     * @param theObject the object instance handle
+     * @param theAttributes the map of attribute handle / value
+     */
+    @Override
+    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
+        this.doReflectAttributeValues(theObject, theAttributes);
+    }
+
+
+    /**
+     * @param theObject the object instance handle
+     * @param theAttributes the map of attribute handle / value
+     */
+    @Override
+    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
+        this.doReflectAttributeValues(theObject, theAttributes);
+    }
+
+
+    /**
+     * @param theObject the object instance handle
+     * @param theAttributes the map of attribute handle / value
+     */
+    @Override
+    public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
+        this.doReflectAttributeValues(theObject, theAttributes);
+    }
+
 }

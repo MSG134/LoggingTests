@@ -33,7 +33,7 @@ import org.slf4j.Logger;
  * @author Johannes Mulder (Fraunhofer IOSB)
  */
 public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador {
-    private IVCT_NullFederateAmbassador localCache;
+    private IVCT_NullFederateAmbassador myFederateAmbassador;
     private Logger                      logger;
 
 
@@ -42,11 +42,11 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     ////////////////////////////////////
 
     /**
-     * @param localCache
+     * @param theFederateAmbassador
      * @param logger
      */
-    public IVCT_LoggingFederateAmbassador(final FederateAmbassador localCache, final Logger logger) {
-        this.localCache = (IVCT_NullFederateAmbassador) localCache;
+    public IVCT_LoggingFederateAmbassador(final FederateAmbassador theFederateAmbassador, final Logger logger) {
+        this.myFederateAmbassador = (IVCT_NullFederateAmbassador) theFederateAmbassador;
         this.logger = logger;
     }
 
@@ -58,7 +58,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void connectionLost(final String faultDescription) throws FederateInternalError {
         this.logger.info("connectionLost " + faultDescription);
-        this.localCache.connectionLost(faultDescription);
+        this.myFederateAmbassador.connectionLost(faultDescription);
     }
 
 
@@ -69,7 +69,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void reportFederationExecutions(final FederationExecutionInformationSet theFederationExecutionInformationSet) throws FederateInternalError {
         this.logger.info("reportFederationExecutions " + theFederationExecutionInformationSet.toString());
-        this.localCache.reportFederationExecutions(theFederationExecutionInformationSet);
+        this.myFederateAmbassador.reportFederationExecutions(theFederationExecutionInformationSet);
     }
 
 
@@ -80,7 +80,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void synchronizationPointRegistrationSucceeded(final String synchronizationPointLabel) throws FederateInternalError {
         this.logger.info("synchronizationPointRegistrationSucceeded " + synchronizationPointLabel);
-        this.localCache.synchronizationPointRegistrationSucceeded(synchronizationPointLabel);
+        this.myFederateAmbassador.synchronizationPointRegistrationSucceeded(synchronizationPointLabel);
     }
 
 
@@ -91,7 +91,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void synchronizationPointRegistrationFailed(final String synchronizationPointLabel, final SynchronizationPointFailureReason reason) throws FederateInternalError {
         this.logger.info("synchronizationPointRegistrationFailed " + synchronizationPointLabel + reason.toString());
-        this.localCache.synchronizationPointRegistrationFailed(synchronizationPointLabel, reason);
+        this.myFederateAmbassador.synchronizationPointRegistrationFailed(synchronizationPointLabel, reason);
     }
 
 
@@ -102,7 +102,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void announceSynchronizationPoint(final String synchronizationPointLabel, final byte[] userSuppliedTag) throws FederateInternalError {
         this.logger.info("announceSynchronizationPoint " + synchronizationPointLabel + " " + Arrays.toString(userSuppliedTag));
-        this.localCache.announceSynchronizationPoint(synchronizationPointLabel, userSuppliedTag);
+        this.myFederateAmbassador.announceSynchronizationPoint(synchronizationPointLabel, userSuppliedTag);
     }
 
 
@@ -113,7 +113,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationSynchronized(final String synchronizationPointLabel, final FederateHandleSet failedToSyncSet) throws FederateInternalError {
         this.logger.info("federationSynchronized " + synchronizationPointLabel + " " + failedToSyncSet.toString());
-        this.localCache.federationSynchronized(synchronizationPointLabel, failedToSyncSet);
+        this.myFederateAmbassador.federationSynchronized(synchronizationPointLabel, failedToSyncSet);
     }
 
 
@@ -124,7 +124,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void initiateFederateSave(final String label) throws FederateInternalError {
         this.logger.info("initiateFederateSave " + label);
-        this.localCache.initiateFederateSave(label);
+        this.myFederateAmbassador.initiateFederateSave(label);
     }
 
 
@@ -135,7 +135,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void initiateFederateSave(final String label, final LogicalTime time) throws FederateInternalError {
         this.logger.info("initiateFederateSave " + label + " " + time.toString());
-        this.localCache.initiateFederateSave(label, time);
+        this.myFederateAmbassador.initiateFederateSave(label, time);
     }
 
 
@@ -146,7 +146,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationSaved() throws FederateInternalError {
         this.logger.info("federationSaved");
-        this.localCache.federationSaved();
+        this.myFederateAmbassador.federationSaved();
     }
 
 
@@ -157,7 +157,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationNotSaved(final SaveFailureReason reason) throws FederateInternalError {
         this.logger.info("federationNotSaved " + reason.toString());
-        this.localCache.federationNotSaved(reason);
+        this.myFederateAmbassador.federationNotSaved(reason);
     }
 
 
@@ -168,7 +168,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationSaveStatusResponse(final FederateHandleSaveStatusPair[] response) throws FederateInternalError {
         this.logger.info("federationSaveStatusResponse " + response.toString());
-        this.localCache.federationSaveStatusResponse(response);
+        this.myFederateAmbassador.federationSaveStatusResponse(response);
     }
 
 
@@ -179,7 +179,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void requestFederationRestoreSucceeded(final String label) throws FederateInternalError {
         this.logger.info("requestFederationRestoreSucceeded " + label);
-        this.localCache.requestFederationRestoreSucceeded(label);
+        this.myFederateAmbassador.requestFederationRestoreSucceeded(label);
     }
 
 
@@ -190,7 +190,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void requestFederationRestoreFailed(final String label) throws FederateInternalError {
         this.logger.info("requestFederationRestoreFailed " + label);
-        this.localCache.requestFederationRestoreFailed(label);
+        this.myFederateAmbassador.requestFederationRestoreFailed(label);
     }
 
 
@@ -201,7 +201,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationRestoreBegun() throws FederateInternalError {
         this.logger.info("federationRestoreBegun");
-        this.localCache.federationRestoreBegun();
+        this.myFederateAmbassador.federationRestoreBegun();
     }
 
 
@@ -212,7 +212,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void initiateFederateRestore(final String label, final String federateName, final FederateHandle federateHandle) throws FederateInternalError {
         this.logger.info("initiateFederateRestore " + label + " " + federateName + " " + federateHandle.toString());
-        this.localCache.initiateFederateRestore(label, federateName, federateHandle);
+        this.myFederateAmbassador.initiateFederateRestore(label, federateName, federateHandle);
     }
 
 
@@ -223,7 +223,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationRestored() throws FederateInternalError {
         this.logger.info("federationRestored");
-        this.localCache.federationRestored();
+        this.myFederateAmbassador.federationRestored();
     }
 
 
@@ -234,7 +234,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationNotRestored(final RestoreFailureReason reason) throws FederateInternalError {
         this.logger.info("federationNotRestored " + reason.toString());
-        this.localCache.federationNotRestored(reason);
+        this.myFederateAmbassador.federationNotRestored(reason);
     }
 
 
@@ -245,7 +245,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void federationRestoreStatusResponse(final FederateRestoreStatus[] response) throws FederateInternalError {
         this.logger.info("federationRestoreStatusResponse " + response.toString());
-        this.localCache.federationRestoreStatusResponse(response);
+        this.myFederateAmbassador.federationRestoreStatusResponse(response);
     }
 
     /////////////////////////////////////
@@ -260,7 +260,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void startRegistrationForObjectClass(final ObjectClassHandle theClass) throws FederateInternalError {
         this.logger.info("startRegistrationForObjectClass " + theClass.toString());
-        this.localCache.startRegistrationForObjectClass(theClass);
+        this.myFederateAmbassador.startRegistrationForObjectClass(theClass);
     }
 
 
@@ -271,7 +271,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void stopRegistrationForObjectClass(final ObjectClassHandle theClass) throws FederateInternalError {
         this.logger.info("stopRegistrationForObjectClass " + theClass.toString());
-        this.localCache.stopRegistrationForObjectClass(theClass);
+        this.myFederateAmbassador.stopRegistrationForObjectClass(theClass);
     }
 
 
@@ -282,7 +282,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void turnInteractionsOn(final InteractionClassHandle theHandle) throws FederateInternalError {
         this.logger.info("turnInteractionsOn " + theHandle.toString());
-        this.localCache.turnInteractionsOn(theHandle);
+        this.myFederateAmbassador.turnInteractionsOn(theHandle);
     }
 
 
@@ -293,7 +293,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void turnInteractionsOff(final InteractionClassHandle theHandle) throws FederateInternalError {
         this.logger.info("turnInteractionsOff " + theHandle);
-        this.localCache.turnInteractionsOff(theHandle);
+        this.myFederateAmbassador.turnInteractionsOff(theHandle);
     }
 
     ////////////////////////////////
@@ -308,7 +308,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void objectInstanceNameReservationSucceeded(final String objectName) throws FederateInternalError {
         this.logger.info("objectInstanceNameReservationSucceeded " + objectName);
-        this.localCache.objectInstanceNameReservationSucceeded(objectName);
+        this.myFederateAmbassador.objectInstanceNameReservationSucceeded(objectName);
     }
 
 
@@ -319,7 +319,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void objectInstanceNameReservationFailed(final String objectName) throws FederateInternalError {
         this.logger.info("objectInstanceNameReservationFailed " + objectName);
-        this.localCache.objectInstanceNameReservationFailed(objectName);
+        this.myFederateAmbassador.objectInstanceNameReservationFailed(objectName);
     }
 
 
@@ -330,7 +330,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void multipleObjectInstanceNameReservationSucceeded(final Set<String> objectNames) throws FederateInternalError {
         this.logger.info("multipleObjectInstanceNameReservationSucceeded " + objectNames.toString());
-        this.localCache.multipleObjectInstanceNameReservationSucceeded(objectNames);
+        this.myFederateAmbassador.multipleObjectInstanceNameReservationSucceeded(objectNames);
     }
 
 
@@ -341,7 +341,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void multipleObjectInstanceNameReservationFailed(final Set<String> objectNames) throws FederateInternalError {
         this.logger.info("multipleObjectInstanceNameReservationFailed " + objectNames.toString());
-        this.localCache.multipleObjectInstanceNameReservationFailed(objectNames);
+        this.myFederateAmbassador.multipleObjectInstanceNameReservationFailed(objectNames);
     }
 
 
@@ -352,7 +352,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) throws FederateInternalError {
         this.logger.info("discoverObjectInstance " + theObject.toString() + " " + theObjectClass.toString() + " " + objectName);
-        this.localCache.discoverObjectInstance(theObject, theObjectClass, objectName);
+        this.myFederateAmbassador.discoverObjectInstance(theObject, theObjectClass, objectName);
     }
 
 
@@ -363,7 +363,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName, final FederateHandle producingFederate) throws FederateInternalError {
         this.logger.info("discoverObjectInstance " + theObject.toString() + " " + theObjectClass.toString() + " " + objectName + " " + producingFederate.toString());
-        this.localCache.discoverObjectInstance(theObject, theObjectClass, objectName, producingFederate);
+        this.myFederateAmbassador.discoverObjectInstance(theObject, theObjectClass, objectName, producingFederate);
     }
 
 
@@ -374,7 +374,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
         this.logger.info("reflectAttributeValues " + theObject.toString() + " " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + reflectInfo.toString());
-        this.localCache.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, reflectInfo);
+        this.myFederateAmbassador.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, reflectInfo);
     }
 
 
@@ -385,7 +385,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
         this.logger.info("reflectAttributeValues " + theObject.toString() + " " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + reflectInfo.toString());
-        this.localCache.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, reflectInfo);
+        this.myFederateAmbassador.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, reflectInfo);
     }
 
 
@@ -396,7 +396,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReflectInfo reflectInfo) throws FederateInternalError {
         this.logger.info("reflectAttributeValues " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + reflectInfo.toString());
-        this.localCache.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, retractionHandle, reflectInfo);
+        this.myFederateAmbassador.reflectAttributeValues(theObject, theAttributes, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, retractionHandle, reflectInfo);
     }
 
 
@@ -407,7 +407,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
         this.logger.info("receiveInteraction " + interactionClass.toString() + " " + theParameters.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + receiveInfo.toString());
-        this.localCache.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, receiveInfo);
+        this.myFederateAmbassador.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, receiveInfo);
     }
 
 
@@ -418,7 +418,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
         this.logger.info("receiveInteraction " + interactionClass.toString() + " " + theParameters.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + receiveInfo.toString());
-        this.localCache.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, receiveInfo);
+        this.myFederateAmbassador.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, receiveInfo);
     }
 
 
@@ -429,7 +429,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
         this.logger.info("receiveInteraction " + interactionClass.toString() + " " + theParameters.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTransport.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + receiveInfo.toString());
-        this.localCache.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, retractionHandle, receiveInfo);
+        this.myFederateAmbassador.receiveInteraction(interactionClass, theParameters, userSuppliedTag, sentOrdering, theTransport, theTime, receivedOrdering, retractionHandle, receiveInfo);
     }
 
 
@@ -440,7 +440,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final SupplementalRemoveInfo removeInfo) throws FederateInternalError {
         this.logger.info("removeObjectInstance " + theObject.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + removeInfo.toString());
-        this.localCache.removeObjectInstance(theObject, userSuppliedTag, sentOrdering, removeInfo);
+        this.myFederateAmbassador.removeObjectInstance(theObject, userSuppliedTag, sentOrdering, removeInfo);
     }
 
 
@@ -451,7 +451,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final LogicalTime theTime, final OrderType receivedOrdering, final SupplementalRemoveInfo removeInfo) throws FederateInternalError {
         this.logger.info("removeObjectInstance " + theObject.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + removeInfo.toString());
-        this.localCache.removeObjectInstance(theObject, userSuppliedTag, sentOrdering, theTime, receivedOrdering, removeInfo);
+        this.myFederateAmbassador.removeObjectInstance(theObject, userSuppliedTag, sentOrdering, theTime, receivedOrdering, removeInfo);
     }
 
 
@@ -462,7 +462,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final LogicalTime theTime, final OrderType receivedOrdering, final MessageRetractionHandle retractionHandle, final SupplementalRemoveInfo removeInfo) throws FederateInternalError {
         this.logger.info("removeObjectInstance " + theObject.toString() + " " + Arrays.toString(userSuppliedTag) + " " + sentOrdering.toString() + " " + theTime.toString() + " " + receivedOrdering.toString() + " " + retractionHandle.toString() + " " + removeInfo.toString());
-        this.localCache.removeObjectInstance(theObject, userSuppliedTag, sentOrdering, theTime, receivedOrdering, retractionHandle, removeInfo);
+        this.myFederateAmbassador.removeObjectInstance(theObject, userSuppliedTag, sentOrdering, theTime, receivedOrdering, retractionHandle, removeInfo);
     }
 
 
@@ -473,7 +473,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void attributesInScope(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes) throws FederateInternalError {
         this.logger.info("attributesInScope " + theObject.toString() + " " + theAttributes.toString());
-        this.localCache.attributesInScope(theObject, theAttributes);
+        this.myFederateAmbassador.attributesInScope(theObject, theAttributes);
     }
 
 
@@ -484,7 +484,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void attributesOutOfScope(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes) throws FederateInternalError {
         this.logger.info("attributesOutOfScope " + theObject.toString() + " " + theAttributes.toString());
-        this.localCache.attributesOutOfScope(theObject, theAttributes);
+        this.myFederateAmbassador.attributesOutOfScope(theObject, theAttributes);
     }
 
 
@@ -495,7 +495,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void provideAttributeValueUpdate(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes, final byte[] userSuppliedTag) throws FederateInternalError {
         this.logger.info("provideAttributeValueUpdate " + theObject.toString() + " " + theAttributes.toString() + " " + Arrays.toString(userSuppliedTag));
-        this.localCache.provideAttributeValueUpdate(theObject, theAttributes, userSuppliedTag);
+        this.myFederateAmbassador.provideAttributeValueUpdate(theObject, theAttributes, userSuppliedTag);
     }
 
 
@@ -506,7 +506,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void turnUpdatesOnForObjectInstance(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes) throws FederateInternalError {
         this.logger.info("turnUpdatesOnForObjectInstance " + theObject.toString() + " " + theAttributes.toString());
-        this.localCache.turnUpdatesOnForObjectInstance(theObject, theAttributes);
+        this.myFederateAmbassador.turnUpdatesOnForObjectInstance(theObject, theAttributes);
     }
 
 
@@ -517,7 +517,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void turnUpdatesOnForObjectInstance(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes, final String updateRateDesignator) throws FederateInternalError {
         this.logger.info("turnUpdatesOnForObjectInstance " + theObject.toString() + " " + theAttributes.toString() + " " + updateRateDesignator);
-        this.localCache.turnUpdatesOnForObjectInstance(theObject, theAttributes, updateRateDesignator);
+        this.myFederateAmbassador.turnUpdatesOnForObjectInstance(theObject, theAttributes, updateRateDesignator);
     }
 
 
@@ -528,7 +528,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void turnUpdatesOffForObjectInstance(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes) throws FederateInternalError {
         this.logger.info("turnUpdatesOffForObjectInstance " + theObject.toString() + " " + theAttributes.toString());
-        this.localCache.turnUpdatesOffForObjectInstance(theObject, theAttributes);
+        this.myFederateAmbassador.turnUpdatesOffForObjectInstance(theObject, theAttributes);
     }
 
 
@@ -539,7 +539,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void confirmAttributeTransportationTypeChange(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes, final TransportationTypeHandle theTransportation) throws FederateInternalError {
         this.logger.info("confirmAttributeTransportationTypeChange " + theObject.toString() + " " + theAttributes.toString() + " " + theTransportation.toString());
-        this.localCache.confirmAttributeTransportationTypeChange(theObject, theAttributes, theTransportation);
+        this.myFederateAmbassador.confirmAttributeTransportationTypeChange(theObject, theAttributes, theTransportation);
     }
 
 
@@ -550,7 +550,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void reportAttributeTransportationType(final ObjectInstanceHandle theObject, final AttributeHandle theAttribute, final TransportationTypeHandle theTransportation) throws FederateInternalError {
         this.logger.info("reportAttributeTransportationType " + theObject.toString() + " " + theAttribute.toString() + " " + theTransportation.toString());
-        this.localCache.reportAttributeTransportationType(theObject, theAttribute, theTransportation);
+        this.myFederateAmbassador.reportAttributeTransportationType(theObject, theAttribute, theTransportation);
     }
 
 
@@ -561,7 +561,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void confirmInteractionTransportationTypeChange(final InteractionClassHandle theInteraction, final TransportationTypeHandle theTransportation) throws FederateInternalError {
         this.logger.info("confirmInteractionTransportationTypeChange " + theInteraction.toString() + " " + theTransportation.toString());
-        this.localCache.confirmInteractionTransportationTypeChange(theInteraction, theTransportation);
+        this.myFederateAmbassador.confirmInteractionTransportationTypeChange(theInteraction, theTransportation);
     }
 
 
@@ -572,7 +572,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void reportInteractionTransportationType(final FederateHandle theFederate, final InteractionClassHandle theInteraction, final TransportationTypeHandle theTransportation) throws FederateInternalError {
         this.logger.info("reportInteractionTransportationType " + theFederate.toString() + " " + theInteraction.toString() + " " + theTransportation.toString());
-        this.localCache.reportInteractionTransportationType(theFederate, theInteraction, theTransportation);
+        this.myFederateAmbassador.reportInteractionTransportationType(theFederate, theInteraction, theTransportation);
     }
 
     ///////////////////////////////////
@@ -587,7 +587,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void requestAttributeOwnershipAssumption(final ObjectInstanceHandle theObject, final AttributeHandleSet offeredAttributes, final byte[] userSuppliedTag) throws FederateInternalError {
         this.logger.info("requestAttributeOwnershipAssumption " + theObject.toString() + " " + offeredAttributes + " " + Arrays.toString(userSuppliedTag));
-        this.localCache.requestAttributeOwnershipAssumption(theObject, offeredAttributes, userSuppliedTag);
+        this.myFederateAmbassador.requestAttributeOwnershipAssumption(theObject, offeredAttributes, userSuppliedTag);
     }
 
 
@@ -598,7 +598,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void requestDivestitureConfirmation(final ObjectInstanceHandle theObject, final AttributeHandleSet offeredAttributes) throws FederateInternalError {
         this.logger.info("requestDivestitureConfirmation " + theObject.toString() + " " + offeredAttributes.toString());
-        this.localCache.requestDivestitureConfirmation(theObject, offeredAttributes);
+        this.myFederateAmbassador.requestDivestitureConfirmation(theObject, offeredAttributes);
     }
 
 
@@ -609,7 +609,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void attributeOwnershipAcquisitionNotification(final ObjectInstanceHandle theObject, final AttributeHandleSet securedAttributes, final byte[] userSuppliedTag) throws FederateInternalError {
         this.logger.info("attributeOwnershipAcquisitionNotification " + theObject.toString() + " " + securedAttributes.toString() + " " + Arrays.toString(userSuppliedTag));
-        this.localCache.attributeOwnershipAcquisitionNotification(theObject, securedAttributes, userSuppliedTag);
+        this.myFederateAmbassador.attributeOwnershipAcquisitionNotification(theObject, securedAttributes, userSuppliedTag);
     }
 
 
@@ -620,7 +620,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void attributeOwnershipUnavailable(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes) throws FederateInternalError {
         this.logger.info("attributeOwnershipUnavailable " + theObject.toString() + " " + theAttributes.toString());
-        this.localCache.attributeOwnershipUnavailable(theObject, theAttributes);
+        this.myFederateAmbassador.attributeOwnershipUnavailable(theObject, theAttributes);
     }
 
 
@@ -631,7 +631,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void requestAttributeOwnershipRelease(final ObjectInstanceHandle theObject, final AttributeHandleSet candidateAttributes, final byte[] userSuppliedTag) throws FederateInternalError {
         this.logger.info("requestAttributeOwnershipRelease " + theObject.toString() + " " + candidateAttributes.toString() + " " + Arrays.toString(userSuppliedTag));
-        this.localCache.requestAttributeOwnershipRelease(theObject, candidateAttributes, userSuppliedTag);
+        this.myFederateAmbassador.requestAttributeOwnershipRelease(theObject, candidateAttributes, userSuppliedTag);
     }
 
 
@@ -642,7 +642,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void confirmAttributeOwnershipAcquisitionCancellation(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes) throws FederateInternalError {
         this.logger.info("confirmAttributeOwnershipAcquisitionCancellation " + theObject.toString() + " " + theAttributes.toString());
-        this.localCache.confirmAttributeOwnershipAcquisitionCancellation(theObject, theAttributes);
+        this.myFederateAmbassador.confirmAttributeOwnershipAcquisitionCancellation(theObject, theAttributes);
     }
 
 
@@ -653,7 +653,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void informAttributeOwnership(final ObjectInstanceHandle theObject, final AttributeHandle theAttribute, final FederateHandle theOwner) throws FederateInternalError {
         this.logger.info("informAttributeOwnership " + theObject.toString() + " " + theAttribute.toString() + " " + theOwner.toString());
-        this.localCache.informAttributeOwnership(theObject, theAttribute, theOwner);
+        this.myFederateAmbassador.informAttributeOwnership(theObject, theAttribute, theOwner);
     }
 
 
@@ -664,7 +664,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void attributeIsNotOwned(final ObjectInstanceHandle theObject, final AttributeHandle theAttribute) throws FederateInternalError {
         this.logger.info("attributeIsNotOwned " + theObject.toString() + " " + theAttribute.toString());
-        this.localCache.attributeIsNotOwned(theObject, theAttribute);
+        this.myFederateAmbassador.attributeIsNotOwned(theObject, theAttribute);
     }
 
 
@@ -675,7 +675,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void attributeIsOwnedByRTI(final ObjectInstanceHandle theObject, final AttributeHandle theAttribute) throws FederateInternalError {
         this.logger.info("attributeIsOwnedByRTI " + theObject.toString() + " " + theAttribute.toString());
-        this.localCache.attributeIsOwnedByRTI(theObject, theAttribute);
+        this.myFederateAmbassador.attributeIsOwnedByRTI(theObject, theAttribute);
     }
 
     //////////////////////////////
@@ -690,7 +690,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void timeRegulationEnabled(final LogicalTime time) throws FederateInternalError {
         this.logger.info("timeRegulationEnabled " + time.toString());
-        this.localCache.timeRegulationEnabled(time);
+        this.myFederateAmbassador.timeRegulationEnabled(time);
     }
 
 
@@ -701,7 +701,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void timeConstrainedEnabled(final LogicalTime time) throws FederateInternalError {
         this.logger.info("timeConstrainedEnabled " + time.toString());
-        this.localCache.timeConstrainedEnabled(time);
+        this.myFederateAmbassador.timeConstrainedEnabled(time);
     }
 
 
@@ -712,7 +712,7 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void timeAdvanceGrant(final LogicalTime theTime) throws FederateInternalError {
         this.logger.info("timeAdvanceGrant " + theTime.toString());
-        this.localCache.timeAdvanceGrant(theTime);
+        this.myFederateAmbassador.timeAdvanceGrant(theTime);
     }
 
 
@@ -723,6 +723,6 @@ public final class IVCT_LoggingFederateAmbassador implements FederateAmbassador 
     @Override
     public void requestRetraction(final MessageRetractionHandle theHandle) throws FederateInternalError {
         this.logger.info("requestRetraction " + theHandle.toString());
-        this.localCache.requestRetraction(theHandle);
+        this.myFederateAmbassador.requestRetraction(theHandle);
     }
 }
