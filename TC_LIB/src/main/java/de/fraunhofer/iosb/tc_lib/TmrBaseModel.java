@@ -79,7 +79,6 @@ public class TmrBaseModel extends IVCT_NullFederateAmbassador implements IVCT_Ba
      * @param callbackModel
      * @param localSettingsDesignator
      */
-    @Override
     public void connect(final FederateAmbassador federateReference, final CallbackModel callbackModel, final String localSettingsDesignator) {
         try {
             this.ivct_rti.connect(federateReference, callbackModel, localSettingsDesignator);
