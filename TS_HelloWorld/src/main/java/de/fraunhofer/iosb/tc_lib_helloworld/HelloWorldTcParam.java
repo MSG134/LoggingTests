@@ -26,6 +26,9 @@ public class HelloWorldTcParam implements IVCT_TcParam {
     private final String sutFederate        = "A";
 
 
+    /**
+     *
+     */
     public HelloWorldTcParam() {
         this.fddFiles[0] = new File(this.basePath + "HelloWorld.xml");
         for (int i = 0; i < this.fileNum; i++) {

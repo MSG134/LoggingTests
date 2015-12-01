@@ -70,7 +70,6 @@ public class TcBaseModel implements IVCT_BaseModel {
      * @param callbackModel
      * @param localSettingsDesignator
      */
-    @Override
     public void connect(final FederateAmbassador federateReference, final CallbackModel callbackModel, final String localSettingsDesignator) {
         try {
             this.ivct_rti.connect(federateReference, callbackModel, localSettingsDesignator);
