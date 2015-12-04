@@ -5,7 +5,6 @@ import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateAmbassador;
-import hla.rti1516e.FederateHandle;
 import hla.rti1516e.InteractionClassHandle;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
@@ -34,7 +33,7 @@ import org.slf4j.Logger;
 /**
  * @author Johannes Mulder (Fraunhofer IOSB)
  */
-public class TcBaseModel implements IVCT_BaseModel {
+public class TcBaseModel extends IVCT_BaseModel {
     protected Logger                                                   logger;
     private AttributeHandle                                            _attributeIdName;
     private EncoderFactory                                             _encoderFactory;
@@ -51,17 +50,13 @@ public class TcBaseModel implements IVCT_BaseModel {
 
 
     /**
-     * @param LOGGER reference to the logger
+     * @param logger reference to the logger
+     * @param ivct_rti
      */
     public TcBaseModel(final Logger logger, final IVCT_RTIambassador ivct_rti) {
+        super(ivct_rti, logger);
         this.ivct_rti = ivct_rti;
         this.logger = logger;
-    }
-
-
-    @Override
-    public FederateHandle initiateRti(final String federateName, final FederateAmbassador federateReference, final IVCT_TcParam tcParam) {
-        return this.ivct_rti.initiateRti(tcParam, federateReference, federateName);
     }
 
 
@@ -78,12 +73,6 @@ public class TcBaseModel implements IVCT_BaseModel {
             // TODO Auto-generated catch block
             ex.printStackTrace();
         }
-    }
-
-
-    @Override
-    public void terminateRti(final IVCT_TcParam tcParam) {
-        this.ivct_rti.terminateRti(tcParam);
     }
 
 
@@ -131,6 +120,7 @@ public class TcBaseModel implements IVCT_BaseModel {
      * @param theObjectClass
      * @param objectName
      */
+    @Override
     public void discoverObjectInstance(final ObjectInstanceHandle theObject, final ObjectClassHandle theObjectClass, final String objectName) {
         if (!this.objectUUIDmap.containsKey(theObject)) {
             this.discoveredObjects.put(theObject, theObjectClass);
@@ -207,6 +197,7 @@ public class TcBaseModel implements IVCT_BaseModel {
      * @param theAttributes
      * @param userSuppliedTag
      */
+    @Override
     public void provideAttributeValueUpdate(final ObjectInstanceHandle theObject, final AttributeHandleSet theAttributes, final byte[] userSuppliedTag) {
         if (theObject.equals(this._userId) && theAttributes.contains(this._attributeIdName)) {
             try {
@@ -228,6 +219,7 @@ public class TcBaseModel implements IVCT_BaseModel {
      * @param theTransport
      * @param receiveInfo
      */
+    @Override
     public void receiveInteraction(final InteractionClassHandle interactionClass, final ParameterHandleValueMap theParameters, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final FederateAmbassador.SupplementalReceiveInfo receiveInfo) {
         if (interactionClass.equals(this._messageId)) {
             if (!theParameters.containsKey(this._parameterIdText)) {
@@ -263,6 +255,7 @@ public class TcBaseModel implements IVCT_BaseModel {
      * @param theTransport
      * @param reflectInfo
      */
+    @Override
     public void reflectAttributeValues(final ObjectInstanceHandle theObject, final AttributeHandleValueMap theAttributes, final byte[] userSuppliedTag, final OrderType sentOrdering, final TransportationTypeHandle theTransport, final FederateAmbassador.SupplementalReflectInfo reflectInfo) {
         final ObjectClassHandle och = this.discoveredObjects.get(theObject);
         final Map<String, AttributeHandle> nameAtt = this.objectAttributesmap.get(och);
@@ -294,6 +287,7 @@ public class TcBaseModel implements IVCT_BaseModel {
      * @param sentOrdering
      * @param removeInfo
      */
+    @Override
     public void removeObjectInstance(final ObjectInstanceHandle theObject, final byte[] userSuppliedTag, final OrderType sentOrdering, final FederateAmbassador.SupplementalRemoveInfo removeInfo) {
         final UUID member = this.objectUUIDmap.remove(theObject);
         if (member != null) {

@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 /**
  * @author mul (Fraunhofer IOSB)
  */
-public class TmrBaseModel extends IVCT_NullFederateAmbassador implements IVCT_BaseModel {
+public class TmrBaseModel extends IVCT_BaseModel {
     private final FederateTransactionIdMapper federateTransactionIdMapper = new FederateTransactionIdMapper();
     private boolean                           gotLastOwnerFederate        = false;
     private IVCT_RTIambassador                ivct_rti;
@@ -49,7 +49,7 @@ public class TmrBaseModel extends IVCT_NullFederateAmbassador implements IVCT_Ba
      * @param logger reference to the logger
      */
     public TmrBaseModel(final Logger logger, final IVCT_RTIambassador ivct_rti) {
-        super(logger);
+        super(ivct_rti, logger);
         this.logger = logger;
     }
 
