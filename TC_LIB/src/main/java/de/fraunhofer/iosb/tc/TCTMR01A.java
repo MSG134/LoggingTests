@@ -51,7 +51,7 @@ public class TCTMR01A extends AbstractTestCase {
     protected void preambleAction() throws TcInconclusive {
         final IVCT_LoggingFederateAmbassador ivct_FederateAmbassador = new IVCT_LoggingFederateAmbassador(tmrBaseModel, LOGGER);
         // Initiate rti
-        tmrBaseModel.initiateRti(this.federateName, ivct_FederateAmbassador, tcParam);
+        final FederateHandle federateHandle = tmrBaseModel.initiateRti(this.federateName, ivct_FederateAmbassador, tcParam);
 
         // Prepare specific data for TMR
         final int capabilityType = 3;

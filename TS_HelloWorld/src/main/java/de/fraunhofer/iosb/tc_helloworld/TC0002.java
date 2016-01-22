@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * @author mul (Fraunhofer IOSB)
  */
 public class TC0002 extends AbstractTestCase {
-    FederateHandle                              federateHandle;
     private static Logger                       logger                         = LoggerFactory.getLogger(TC0002.class);
     private String                              federateName                   = "IVCT";
 
@@ -67,7 +66,7 @@ public class TC0002 extends AbstractTestCase {
     protected void preambleAction() throws TcInconclusive {
 
         // Initiate rti
-        this.federateHandle = helloWorldBaseModel.initiateRti(this.federateName, ivct_LoggingFederateAmbassador, helloWorldTcParam);
+        final FederateHandle federateHandle = helloWorldBaseModel.initiateRti(this.federateName, ivct_LoggingFederateAmbassador, helloWorldTcParam);
 
         // Do the necessary calls to get handles and do publish and subscribe
         if (helloWorldBaseModel.init()) {
@@ -78,14 +77,13 @@ public class TC0002 extends AbstractTestCase {
 
     @Override
     protected void performTest() throws TcInconclusive, TcFailed {
-        this.federateHandle = helloWorldBaseModel.getFederateHandle();
 
         // Allow time to work and get some reflect values.
         if (helloWorldBaseModel.sleepFor(helloWorldTcParam.getSleepTimeWait())) {
             throw new TcInconclusive("sleepFor problem");
         }
 
-        final String message = "Hello World " + this.federateName;
+        final String message = "Hello World from " + this.federateName;
         final String testMessage = "Hello World from " + helloWorldTcParam.getSutFederate();
 
         // Loop a number of cycles and test whether the sut answers the hello world call
